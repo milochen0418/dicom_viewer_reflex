@@ -37,9 +37,14 @@ class DicomViewerState(rx.State):
     rows: int = 0
     columns: int = 0
     show_metadata: bool = True
+    metadata_unlocked: bool = False
+    metadata_password_input: str = ""
+    metadata_password_error: str = ""
     _cached_pixel_array: np.ndarray | None = None
     _cached_rescale_slope: float = 1.0
     _cached_rescale_intercept: float = 0.0
+
+    _metadata_password: str = os.getenv("DICOM_METADATA_PASSWORD", "dicom")
 
     @rx.var
     def total_images(self) -> int:
@@ -72,6 +77,9 @@ class DicomViewerState(rx.State):
             self.dicom_files = []
             self.file_names = []
             self.current_image_base64 = "/placeholder.svg"
+            self.metadata_unlocked = False
+            self.metadata_password_input = ""
+            self.metadata_password_error = ""
         try:
             if not self.directory_path:
                 async with self:
@@ -176,6 +184,27 @@ class DicomViewerState(rx.State):
     @rx.event
     def toggle_metadata(self):
         self.show_metadata = not self.show_metadata
+
+    @rx.event
+    def update_metadata_password(self, value: str):
+        self.metadata_password_input = value
+        if self.metadata_password_error:
+            self.metadata_password_error = ""
+
+    @rx.event
+    def unlock_metadata(self):
+        if self.metadata_password_input == self._metadata_password:
+            self.metadata_unlocked = True
+            self.metadata_password_input = ""
+            self.metadata_password_error = ""
+        else:
+            self.metadata_password_error = "Invalid password."
+
+    @rx.event
+    def lock_metadata(self):
+        self.metadata_unlocked = False
+        self.metadata_password_input = ""
+        self.metadata_password_error = ""
 
     def _process_image(self):
         """Apply windowing and convert to base64."""

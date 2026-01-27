@@ -38,13 +38,75 @@ def metadata_panel() -> rx.Component:
             ),
             rx.el.div(
                 control_section_header("Patient Info"),
-                metadata_row("Name", DicomViewerState.patient_name, "user"),
-                metadata_row("ID", DicomViewerState.patient_id, "id-card"),
+                metadata_row(
+                    "Name",
+                    rx.cond(
+                        DicomViewerState.metadata_unlocked,
+                        DicomViewerState.patient_name,
+                        "Hidden",
+                    ),
+                    "user",
+                ),
+                metadata_row(
+                    "ID",
+                    rx.cond(
+                        DicomViewerState.metadata_unlocked,
+                        DicomViewerState.patient_id,
+                        "Hidden",
+                    ),
+                    "id-card",
+                ),
+                rx.cond(
+                    DicomViewerState.metadata_unlocked,
+                    rx.el.button(
+                        "Lock",
+                        on_click=DicomViewerState.lock_metadata,
+                        class_name="text-xs text-slate-400 hover:text-white mt-2",
+                    ),
+                    rx.el.div(
+                        rx.el.label(
+                            "Unlock protected fields",
+                            class_name="block text-xs font-medium text-slate-400 mb-2",
+                        ),
+                        rx.el.div(
+                            rx.el.input(
+                                type="password",
+                                placeholder="Password",
+                                value=DicomViewerState.metadata_password_input,
+                                on_change=DicomViewerState.update_metadata_password,
+                                class_name="flex-1 bg-slate-800 text-slate-200 text-sm rounded-lg border border-slate-700 px-3 py-2 outline-none focus:ring-1 focus:ring-blue-500",
+                            ),
+                            rx.el.button(
+                                "Unlock",
+                                on_click=DicomViewerState.unlock_metadata,
+                                class_name="ml-2 px-3 py-2 text-xs rounded-lg bg-blue-600 hover:bg-blue-500 text-white",
+                            ),
+                            class_name="flex items-center",
+                        ),
+                        rx.cond(
+                            DicomViewerState.metadata_password_error != "",
+                            rx.el.p(
+                                DicomViewerState.metadata_password_error,
+                                class_name="text-xs text-red-400 mt-2",
+                            ),
+                            rx.el.span(),
+                        ),
+                        class_name="mt-2",
+                    ),
+                ),
                 class_name="mb-6",
             ),
             rx.el.div(
                 control_section_header("Study Details"),
-                metadata_row("Date", DicomViewerState.study_date, "calendar"),
+                metadata_row(
+                    "Date",
+                    rx.cond(
+                        DicomViewerState.metadata_unlocked,
+                        DicomViewerState.study_date,
+                        "Hidden",
+                    ),
+                    "calendar",
+                ),
                 metadata_row("Modality", DicomViewerState.modality, "scan"),
                 metadata_row("Study", DicomViewerState.study_description, "file-text"),
                 metadata_row("Series", DicomViewerState.series_description, "layers"),
