@@ -105,6 +105,14 @@ class DicomViewerState(rx.State):
                     self.has_loaded = True
                     self.current_index = 0
                 await self.load_selected_image()
+        except PermissionError as e:
+            logging.exception(f"Error scanning directory: {e}")
+            async with self:
+                self.error_message = (
+                    "Permission denied when accessing the directory. "
+                    "On macOS, grant Terminal/VS Code access to Desktop or "
+                    "enable Full Disk Access in System Settings > Privacy & Security."
+                )
         except Exception as e:
             logging.exception(f"Error scanning directory: {e}")
             async with self:
