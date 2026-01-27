@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "dicom_viewer_reflex"
+version = "0.1.0"
+description = ""
+authors = ["Milo Chen <milo_chen@mail2000.com.tw>"]
+packages = [{ include = "dicom_viewer_reflex" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+reflex = "0.8.24.post1"
+pydicom = "*"
+pillow = "*"
+numpy = "*"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
