@@ -332,6 +332,14 @@ def viewer_layout() -> rx.Component:
             ),
             class_name="bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center z-10 sticky top-0 shrink-0",
         ),
+        rx.cond(
+            DicomViewerState.error_message != "",
+            rx.el.div(
+                rx.icon("triangle-alert", class_name="h-4 w-4 mr-2 text-red-400"),
+                DicomViewerState.error_message,
+                class_name="m-4 flex items-center text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-900/50",
+            ),
+        ),
         rx.el.div(
             metadata_panel(),
             rx.el.div(

@@ -313,7 +313,7 @@ class DicomViewerState(rx.State):
         except Exception as e:
             logging.exception(f"Error loading image {file_path}: {e}")
             async with self:
-                self.error_message = f"Error loading image: {str(e)}"
+                self.error_message = self._format_dicom_error(e)
 
     def _extract_metadata(self, ds):
         """Extract metadata from DICOM dataset."""
@@ -371,23 +371,40 @@ class DicomViewerState(rx.State):
         if self._cached_pixel_array is None:
             return
         try:
-            pixel_data = self._cached_pixel_array.astype(float)
-            hu_image = (
-                pixel_data * self._cached_rescale_slope + self._cached_rescale_intercept
-            )
-            center = self.window_center
-            width = self.window_width
-            min_val = center - width / 2
-            max_val = center + width / 2
-            windowed = np.clip(hu_image, min_val, max_val)
-            if max_val != min_val:
-                windowed = (windowed - min_val) / (max_val - min_val) * 255.0
+            pixel_data = self._cached_pixel_array
+            is_rgb = pixel_data.ndim == 3 and pixel_data.shape[-1] in (3, 4)
+            if pixel_data.ndim >= 3 and not is_rgb:
+                try:
+                    pixel_data = pixel_data.reshape((-1,) + pixel_data.shape[-2:])[0]
+                except Exception:
+                    pixel_data = pixel_data[0]
+            if is_rgb:
+                rgb = pixel_data.astype(float)
+                rgb = np.clip(rgb, np.min(rgb), np.max(rgb))
+                if np.max(rgb) != np.min(rgb):
+                    rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb)) * 255.0
+                img_uint8 = rgb.astype(np.uint8)
+                pil_image = Image.fromarray(img_uint8)
+                if pil_image.mode not in ("RGB", "RGBA"):
+                    pil_image = pil_image.convert("RGB")
             else:
-                windowed = windowed * 0
-            img_uint8 = windowed.astype(np.uint8)
-            pil_image = Image.fromarray(img_uint8)
-            if pil_image.mode != "L":
-                pil_image = pil_image.convert("L")
+                pixel_data = pixel_data.astype(float)
+                hu_image = (
+                    pixel_data * self._cached_rescale_slope + self._cached_rescale_intercept
+                )
+                center = self.window_center
+                width = self.window_width
+                min_val = center - width / 2
+                max_val = center + width / 2
+                windowed = np.clip(hu_image, min_val, max_val)
+                if max_val != min_val:
+                    windowed = (windowed - min_val) / (max_val - min_val) * 255.0
+                else:
+                    windowed = windowed * 0
+                img_uint8 = windowed.astype(np.uint8)
+                pil_image = Image.fromarray(img_uint8)
+                if pil_image.mode != "L":
+                    pil_image = pil_image.convert("L")
             buffer = io.BytesIO()
             pil_image.save(buffer, format="PNG")
             b64_string = base64.b64encode(buffer.getvalue()).decode()
@@ -395,6 +412,22 @@ class DicomViewerState(rx.State):
         except Exception as e:
             logging.exception(f"Error processing image: {e}")
             self.current_image_base64 = "/placeholder.svg"
+
+    def _format_dicom_error(self, error: Exception) -> str:
+        message = str(error)
+        lowered = message.lower()
+        if (
+            "transfer syntax" in lowered
+            or "no handler" in lowered
+            or "decode" in lowered
+            or "compressed" in lowered
+        ):
+            return (
+                "Unable to decode pixel data. This DICOM appears to use a compressed "
+                "transfer syntax. Install pylibjpeg (and pylibjpeg-libjpeg) or gdcm to "
+                "enable decompression, then restart the app."
+            )
+        return f"Error loading image: {message}"
 
     @rx.event
     def update_window_width(self, value: str):
