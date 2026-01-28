@@ -36,6 +36,9 @@ class DicomViewerState(rx.State):
     pan_y: int = 0
     selected_preset: str = ""
     tooltip_language: str = "zh-TW"
+    tutorial_dialog_open: bool = False
+    tutorial_dialog_title: str = ""
+    tutorial_dialog_url: str = ""
     patient_name: str = "N/A"
     patient_id: str = "N/A"
     study_date: str = "N/A"
@@ -54,139 +57,151 @@ class DicomViewerState(rx.State):
     _cached_pixel_array: np.ndarray | None = None
     _cached_rescale_slope: float = 1.0
     _cached_rescale_intercept: float = 0.0
+    _default_tutorial_links: dict[str, str] = {
+        "en": "https://en.wikipedia.org/wiki/Windowing_(CT)",
+        "zh-TW": "https://zh.wikipedia.org/wiki/%E9%9B%BB%E8%85%A6%E6%96%B7%E5%B1%A4%E6%8E%83%E6%8F%8F",
+        "zh-CN": "https://zh.wikipedia.org/wiki/%E7%94%B5%E8%84%91%E6%96%AD%E5%B1%82%E6%89%AB%E6%8F%8F",
+        "es": "https://es.wikipedia.org/wiki/Tomograf%C3%ADa_computarizada",
+    }
+    _preset_tutorial_links: dict[str, dict[str, str]] = {
+        "en": {},
+        "zh-TW": {},
+        "zh-CN": {},
+        "es": {},
+    }
 
     _preset_descriptions: dict[str, dict[str, str]] = {
         "en": {
-            "Soft Tissue": "General soft-tissue contrast for CT.",
-            "Lung": "Optimized for lung parenchyma and airways.",
-            "Bone": "High contrast for cortical bone and fractures.",
-            "Brain": "Standard brain window for parenchyma.",
-            "Abdomen": "General abdominal soft-tissue window.",
-            "Liver": "Dedicated liver parenchyma window.",
-            "Mediastinum": "Mediastinal soft-tissue structures.",
-            "Spine": "Spine soft-tissue and canal assessment.",
-            "Pelvis": "Pelvic soft-tissue overview.",
-            "Head/Neck": "Soft-tissue detail in head and neck.",
-            "CTA/Vascular": "CTA vessel window for contrast studies.",
-            "Kidney": "Renal parenchyma and collecting system.",
-            "Pancreas": "Pancreatic parenchyma detail.",
-            "Trauma": "Wide soft-tissue window for trauma.",
-            "Subdural": "Subdural hematoma evaluation.",
-            "Stroke": "Narrow brain window for early ischemia.",
-            "Body": "Broad soft-tissue body window.",
-            "Extremity/MSK": "Musculoskeletal soft-tissue detail.",
-            "Temporal Bone": "Very wide window for temporal bone.",
-            "Sinus": "Paranasal sinus soft-tissue window.",
-            "Angio Bone Sub": "Bone-subtraction angiography view.",
-            "Lung HRCT": "High-resolution lung detail.",
-            "Orbits": "Orbital soft-tissue structures.",
-            "CTA Head/Neck": "CTA head and neck vessels.",
-            "Arterial": "Arterial phase vascular window.",
-            "Venous": "Venous phase vascular window.",
-            "Colon/Bowel": "Bowel wall and lumen evaluation.",
-            "Adrenal": "Adrenal gland assessment.",
-            "Gallbladder": "Gallbladder and biliary detail.",
-            "Skin/Subcutaneous": "Skin and subcutaneous tissues.",
-            "Cardiac": "Cardiac soft-tissue structures.",
+            "Soft Tissue": "Good for most organs and muscles.",
+            "Lung": "Best for seeing lungs and airways.",
+            "Bone": "Makes bones and fractures easy to see.",
+            "Brain": "Standard view for brain tissue.",
+            "Abdomen": "General view for belly organs.",
+            "Liver": "Clearer view of the liver.",
+            "Mediastinum": "Shows the middle chest area.",
+            "Spine": "Helps check the spine and canal.",
+            "Pelvis": "General view of pelvic organs.",
+            "Head/Neck": "Shows soft tissues in head/neck.",
+            "CTA/Vascular": "Shows blood vessels with contrast.",
+            "Kidney": "Helps see kidneys clearly.",
+            "Pancreas": "Better view of the pancreas.",
+            "Trauma": "Wide view for injuries.",
+            "Subdural": "Helps see bleeding under the skull.",
+            "Stroke": "Narrow brain view for early stroke.",
+            "Body": "Wide soft-tissue view for whole body.",
+            "Extremity/MSK": "For arms/legs soft tissues.",
+            "Temporal Bone": "Very wide view for ear bones.",
+            "Sinus": "For sinuses around the nose.",
+            "Angio Bone Sub": "Shows vessels after bone is removed.",
+            "Lung HRCT": "Extra detail for lungs.",
+            "Orbits": "For the eye sockets.",
+            "CTA Head/Neck": "Vessels in head and neck.",
+            "Arterial": "Artery phase vessels.",
+            "Venous": "Vein phase vessels.",
+            "Colon/Bowel": "For colon and bowel walls.",
+            "Adrenal": "For adrenal glands.",
+            "Gallbladder": "For gallbladder and bile ducts.",
+            "Skin/Subcutaneous": "For skin and fat layer.",
+            "Cardiac": "For heart soft tissues.",
         },
         "zh-TW": {
-            "Soft Tissue": "一般軟組織對比視窗。",
-            "Lung": "適合肺實質與氣道觀察。",
-            "Bone": "高對比顯示皮質骨與骨折。",
-            "Brain": "腦實質常用腦窗。",
-            "Abdomen": "腹部軟組織通用視窗。",
-            "Liver": "肝實質細節視窗。",
-            "Mediastinum": "縱膈軟組織結構。",
-            "Spine": "脊椎軟組織與椎管評估。",
-            "Pelvis": "骨盆軟組織概覽。",
-            "Head/Neck": "頭頸部軟組織細節。",
-            "CTA/Vascular": "CTA 血管對比視窗。",
-            "Kidney": "腎實質與集尿系統。",
-            "Pancreas": "胰臟實質細節。",
-            "Trauma": "創傷用寬範圍軟組織窗。",
-            "Subdural": "硬膜下出血評估。",
-            "Stroke": "窄腦窗，用於早期缺血。",
-            "Body": "全身寬範圍軟組織窗。",
-            "Extremity/MSK": "四肢肌骨軟組織。",
-            "Temporal Bone": "顳骨超寬視窗。",
-            "Sinus": "鼻竇軟組織視窗。",
-            "Angio Bone Sub": "骨扣除血管影像。",
-            "Lung HRCT": "高解析肺部細節。",
-            "Orbits": "眼眶軟組織結構。",
-            "CTA Head/Neck": "頭頸部 CTA 血管。",
-            "Arterial": "動脈期血管視窗。",
-            "Venous": "靜脈期血管視窗。",
-            "Colon/Bowel": "腸道壁與腔內評估。",
-            "Adrenal": "腎上腺評估。",
-            "Gallbladder": "膽囊與膽道細節。",
-            "Skin/Subcutaneous": "皮膚與皮下組織。",
-            "Cardiac": "心臟軟組織結構。",
+            "Soft Tissue": "看大部分器官與肌肉。",
+            "Lung": "看肺部與氣道。",
+            "Bone": "讓骨頭和骨折更清楚。",
+            "Brain": "腦部常用視窗。",
+            "Abdomen": "看腹部器官。",
+            "Liver": "看肝臟更清楚。",
+            "Mediastinum": "看胸部中間區域。",
+            "Spine": "看脊椎與椎管。",
+            "Pelvis": "看骨盆器官。",
+            "Head/Neck": "看頭頸部軟組織。",
+            "CTA/Vascular": "看打顯影劑的血管。",
+            "Kidney": "看腎臟更清楚。",
+            "Pancreas": "看胰臟更清楚。",
+            "Trauma": "看受傷的大範圍。",
+            "Subdural": "看頭骨下出血。",
+            "Stroke": "看早期中風。",
+            "Body": "全身軟組織大範圍。",
+            "Extremity/MSK": "看四肢軟組織。",
+            "Temporal Bone": "看耳朵附近骨頭。",
+            "Sinus": "看鼻竇。",
+            "Angio Bone Sub": "扣掉骨頭後看血管。",
+            "Lung HRCT": "更細的肺部細節。",
+            "Orbits": "看眼眶。",
+            "CTA Head/Neck": "看頭頸部血管。",
+            "Arterial": "動脈期血管。",
+            "Venous": "靜脈期血管。",
+            "Colon/Bowel": "看腸道和腸壁。",
+            "Adrenal": "看腎上腺。",
+            "Gallbladder": "看膽囊和膽道。",
+            "Skin/Subcutaneous": "看皮膚和皮下脂肪。",
+            "Cardiac": "看心臟軟組織。",
         },
         "zh-CN": {
-            "Soft Tissue": "常用软组织对比视窗。",
-            "Lung": "适合肺实质与气道观察。",
-            "Bone": "高对比显示皮质骨与骨折。",
-            "Brain": "脑实质常用脑窗。",
-            "Abdomen": "腹部软组织通用视窗。",
-            "Liver": "肝实质细节视窗。",
-            "Mediastinum": "纵隔软组织结构。",
-            "Spine": "脊柱软组织与椎管评估。",
-            "Pelvis": "骨盆软组织概览。",
-            "Head/Neck": "头颈部软组织细节。",
-            "CTA/Vascular": "CTA 血管对比视窗。",
-            "Kidney": "肾实质与集合系统。",
-            "Pancreas": "胰腺实质细节。",
-            "Trauma": "创伤用宽范围软组织窗。",
-            "Subdural": "硬膜下出血评估。",
-            "Stroke": "窄脑窗，用于早期缺血。",
-            "Body": "全身宽范围软组织窗。",
-            "Extremity/MSK": "四肢肌骨软组织。",
-            "Temporal Bone": "颞骨超宽视窗。",
-            "Sinus": "鼻窦软组织视窗。",
-            "Angio Bone Sub": "骨扣除血管影像。",
-            "Lung HRCT": "高分辨率肺部细节。",
-            "Orbits": "眼眶软组织结构。",
-            "CTA Head/Neck": "头颈部 CTA 血管。",
-            "Arterial": "动脉期血管视窗。",
-            "Venous": "静脉期血管视窗。",
-            "Colon/Bowel": "肠壁与腔内评估。",
-            "Adrenal": "肾上腺评估。",
-            "Gallbladder": "胆囊与胆道细节。",
-            "Skin/Subcutaneous": "皮肤与皮下组织。",
-            "Cardiac": "心脏软组织结构。",
+            "Soft Tissue": "看大部分器官和肌肉。",
+            "Lung": "看肺部和气道。",
+            "Bone": "让骨头和骨折更清楚。",
+            "Brain": "脑部常用视窗。",
+            "Abdomen": "看腹部器官。",
+            "Liver": "看肝脏更清楚。",
+            "Mediastinum": "看胸部中间区域。",
+            "Spine": "看脊柱与椎管。",
+            "Pelvis": "看骨盆器官。",
+            "Head/Neck": "看头颈部软组织。",
+            "CTA/Vascular": "看打显影剂的血管。",
+            "Kidney": "看肾脏更清楚。",
+            "Pancreas": "看胰腺更清楚。",
+            "Trauma": "看受伤的大范围。",
+            "Subdural": "看颅骨下出血。",
+            "Stroke": "看早期中风。",
+            "Body": "全身软组织大范围。",
+            "Extremity/MSK": "看四肢软组织。",
+            "Temporal Bone": "看耳朵附近骨头。",
+            "Sinus": "看鼻窦。",
+            "Angio Bone Sub": "去掉骨头后看血管。",
+            "Lung HRCT": "更细的肺部细节。",
+            "Orbits": "看眼眶。",
+            "CTA Head/Neck": "看头颈部血管。",
+            "Arterial": "动脉期血管。",
+            "Venous": "静脉期血管。",
+            "Colon/Bowel": "看肠道和肠壁。",
+            "Adrenal": "看肾上腺。",
+            "Gallbladder": "看胆囊和胆道。",
+            "Skin/Subcutaneous": "看皮肤和皮下脂肪。",
+            "Cardiac": "看心脏软组织。",
         },
         "es": {
-            "Soft Tissue": "Ventana general de tejidos blandos.",
-            "Lung": "Optimizada para parénquima pulmonar.",
-            "Bone": "Alto contraste para hueso cortical.",
-            "Brain": "Ventana cerebral estándar.",
-            "Abdomen": "Ventana general de abdomen.",
-            "Liver": "Detalle del parénquima hepático.",
-            "Mediastinum": "Estructuras mediastínicas.",
-            "Spine": "Evaluación de columna y canal.",
-            "Pelvis": "Vista general de pelvis.",
-            "Head/Neck": "Detalle de cabeza y cuello.",
-            "CTA/Vascular": "Ventana vascular para CTA.",
-            "Kidney": "Parénquima renal y colector.",
-            "Pancreas": "Detalle del páncreas.",
-            "Trauma": "Ventana amplia para trauma.",
-            "Subdural": "Evaluación de hematoma subdural.",
-            "Stroke": "Ventana estrecha para isquemia.",
-            "Body": "Ventana amplia de tejido blando.",
-            "Extremity/MSK": "Detalle musculoesquelético.",
-            "Temporal Bone": "Ventana muy amplia del temporal.",
-            "Sinus": "Ventana de senos paranasales.",
-            "Angio Bone Sub": "Sustracción ósea en angiografía.",
-            "Lung HRCT": "Detalle pulmonar de alta resolución.",
-            "Orbits": "Estructuras orbitarias.",
-            "CTA Head/Neck": "Vasos de cabeza y cuello en CTA.",
-            "Arterial": "Ventana vascular fase arterial.",
-            "Venous": "Ventana vascular fase venosa.",
-            "Colon/Bowel": "Evaluación de colon e intestino.",
-            "Adrenal": "Evaluación suprarrenal.",
-            "Gallbladder": "Detalle vesicular y biliar.",
-            "Skin/Subcutaneous": "Piel y tejido subcutáneo.",
-            "Cardiac": "Estructuras cardiacas.",
+            "Soft Tissue": "Para la mayoría de órganos y músculos.",
+            "Lung": "Para ver pulmones y vías aéreas.",
+            "Bone": "Hace más claros los huesos y fracturas.",
+            "Brain": "Vista estándar del cerebro.",
+            "Abdomen": "Vista general del abdomen.",
+            "Liver": "Para ver el hígado con más detalle.",
+            "Mediastinum": "Muestra el centro del pecho.",
+            "Spine": "Para revisar la columna y el canal.",
+            "Pelvis": "Vista general de la pelvis.",
+            "Head/Neck": "Para tejidos de cabeza y cuello.",
+            "CTA/Vascular": "Para vasos con contraste.",
+            "Kidney": "Para ver los riñones.",
+            "Pancreas": "Para ver el páncreas.",
+            "Trauma": "Vista amplia para lesiones.",
+            "Subdural": "Para ver sangrado bajo el cráneo.",
+            "Stroke": "Vista estrecha para ictus temprano.",
+            "Body": "Vista amplia de tejidos blandos.",
+            "Extremity/MSK": "Para tejidos de brazos y piernas.",
+            "Temporal Bone": "Vista muy amplia del temporal.",
+            "Sinus": "Para los senos paranasales.",
+            "Angio Bone Sub": "Vasos con hueso removido.",
+            "Lung HRCT": "Más detalle del pulmón.",
+            "Orbits": "Para las órbitas de los ojos.",
+            "CTA Head/Neck": "Vasos de cabeza y cuello.",
+            "Arterial": "Vasos en fase arterial.",
+            "Venous": "Vasos en fase venosa.",
+            "Colon/Bowel": "Para colon e intestino.",
+            "Adrenal": "Para glándulas suprarrenales.",
+            "Gallbladder": "Para vesícula y vía biliar.",
+            "Skin/Subcutaneous": "Para piel y grasa.",
+            "Cardiac": "Para tejidos del corazón.",
         },
     }
 
@@ -570,6 +585,7 @@ class DicomViewerState(rx.State):
     def update_window_width(self, value: str):
         try:
             self.window_width = float(value)
+            self.selected_preset = ""
             self._process_image()
         except ValueError as e:
             logging.exception(f"Error updating window width: {e}")
@@ -578,6 +594,7 @@ class DicomViewerState(rx.State):
     def update_window_center(self, value: str):
         try:
             self.window_center = float(value)
+            self.selected_preset = ""
             self._process_image()
         except ValueError as e:
             logging.exception(f"Error updating window center: {e}")
@@ -689,6 +706,29 @@ class DicomViewerState(rx.State):
         if value in self._preset_descriptions:
             self.tooltip_language = value
 
+    def _get_tutorial_link(self, preset: str) -> str:
+        links = self._preset_tutorial_links.get(self.tooltip_language, {})
+        if preset in links:
+            return links[preset]
+        fallback_links = self._preset_tutorial_links.get("en", {})
+        if preset in fallback_links:
+            return fallback_links[preset]
+        return self._default_tutorial_links.get(
+            self.tooltip_language, self._default_tutorial_links["en"]
+        )
+
+    @rx.event
+    def open_tutorial_dialog(self, preset: str):
+        self.tutorial_dialog_title = preset
+        self.tutorial_dialog_url = self._get_tutorial_link(preset)
+        self.tutorial_dialog_open = True
+
+    @rx.event
+    def close_tutorial_dialog(self):
+        self.tutorial_dialog_open = False
+        self.tutorial_dialog_title = ""
+        self.tutorial_dialog_url = ""
+
     @rx.var
     def preset_options(self) -> list[str]:
         """Available windowing presets."""
@@ -731,3 +771,17 @@ class DicomViewerState(rx.State):
         return self._preset_descriptions.get(
             self.tooltip_language, self._preset_descriptions["en"]
         )
+
+    @rx.var
+    def preset_tutorial_links(self) -> dict[str, str]:
+        base = {
+            preset: self._default_tutorial_links.get(
+                self.tooltip_language, self._default_tutorial_links["en"]
+            )
+            for preset in self.preset_options
+        }
+        language_links = self._preset_tutorial_links.get(self.tooltip_language, {})
+        fallback_links = self._preset_tutorial_links.get("en", {})
+        base.update(fallback_links)
+        base.update(language_links)
+        return base

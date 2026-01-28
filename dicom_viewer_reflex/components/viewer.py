@@ -9,6 +9,49 @@ def control_section_header(title: str) -> rx.Component:
     )
 
 
+def tutorial_dialog() -> rx.Component:
+    return rx.el.dialog(
+        rx.el.div(
+            rx.el.div(
+                rx.el.h3(
+                    DicomViewerState.tutorial_dialog_title,
+                    class_name="text-base font-semibold text-slate-100",
+                ),
+                rx.el.button(
+                    rx.icon("x", class_name="h-4 w-4"),
+                    on_click=DicomViewerState.close_tutorial_dialog,
+                    class_name="p-1 rounded hover:bg-slate-800 text-slate-300",
+                ),
+                class_name="flex items-center justify-between mb-3",
+            ),
+            rx.cond(
+                DicomViewerState.tutorial_dialog_url != "",
+                rx.el.div(
+                    rx.el.iframe(
+                        src=DicomViewerState.tutorial_dialog_url,
+                        class_name="w-full h-96 rounded-lg border border-slate-800",
+                    ),
+                    rx.el.a(
+                        "Open in new tab",
+                        href=DicomViewerState.tutorial_dialog_url,
+                        target="_blank",
+                        rel="noreferrer",
+                        class_name="text-xs text-blue-400 hover:text-blue-300 mt-2 inline-block",
+                    ),
+                    class_name="space-y-2",
+                ),
+                rx.el.p(
+                    "No tutorial link configured for this preset.",
+                    class_name="text-sm text-slate-400",
+                ),
+            ),
+            class_name="bg-slate-950 rounded-xl border border-slate-800 p-4 w-[560px] max-w-[90vw]",
+        ),
+        open=DicomViewerState.tutorial_dialog_open,
+        class_name="backdrop:bg-black/60",
+    )
+
+
 def preset_item(preset: str) -> rx.Component:
     is_selected = DicomViewerState.selected_preset == preset
     return rx.el.div(
@@ -23,13 +66,23 @@ def preset_item(preset: str) -> rx.Component:
         ),
         rx.el.div(
             rx.icon("help-circle", class_name="h-4 w-4 text-slate-400"),
-            rx.el.div(
-                DicomViewerState.preset_tooltips[preset],
-                class_name="absolute right-0 mt-2 w-52 text-xs text-slate-200 bg-slate-900 border border-slate-700 rounded-lg shadow-xl p-2 hidden group-hover:block",
-            ),
-            class_name="relative group ml-2",
+            class_name="ml-2",
         ),
-        class_name="flex items-center",
+        rx.el.div(
+            DicomViewerState.preset_tooltips[preset],
+            rx.el.button(
+                "Learn",
+                on_click=lambda: DicomViewerState.open_tutorial_dialog(preset),
+                class_name="mt-2 text-[11px] text-blue-300 hover:text-blue-200",
+            ),
+            class_name=(
+                "absolute right-0 mt-2 w-52 text-xs text-slate-200 bg-slate-900 "
+                "border border-slate-700 rounded-lg shadow-xl p-2 z-50 "
+                "opacity-0 pointer-events-none transition-opacity "
+                "group-hover:opacity-100 group-hover:pointer-events-auto"
+            ),
+        ),
+        class_name="relative flex items-center group",
     )
 
 
@@ -342,6 +395,7 @@ def viewer_sidebar() -> rx.Component:
             ),
             class_name="p-6 border-t border-slate-800",
         ),
+        tutorial_dialog(),
         class_name="w-80 bg-slate-900 border-l border-slate-800 flex flex-col z-20 shadow-xl overflow-y-auto custom-scrollbar",
     )
 
