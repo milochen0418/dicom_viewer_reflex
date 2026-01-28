@@ -34,6 +34,8 @@ class DicomViewerState(rx.State):
     zoom_level: float = 1.0
     pan_x: int = 0
     pan_y: int = 0
+    selected_preset: str = ""
+    tooltip_language: str = "zh-TW"
     patient_name: str = "N/A"
     patient_id: str = "N/A"
     study_date: str = "N/A"
@@ -52,6 +54,141 @@ class DicomViewerState(rx.State):
     _cached_pixel_array: np.ndarray | None = None
     _cached_rescale_slope: float = 1.0
     _cached_rescale_intercept: float = 0.0
+
+    _preset_descriptions: dict[str, dict[str, str]] = {
+        "en": {
+            "Soft Tissue": "General soft-tissue contrast for CT.",
+            "Lung": "Optimized for lung parenchyma and airways.",
+            "Bone": "High contrast for cortical bone and fractures.",
+            "Brain": "Standard brain window for parenchyma.",
+            "Abdomen": "General abdominal soft-tissue window.",
+            "Liver": "Dedicated liver parenchyma window.",
+            "Mediastinum": "Mediastinal soft-tissue structures.",
+            "Spine": "Spine soft-tissue and canal assessment.",
+            "Pelvis": "Pelvic soft-tissue overview.",
+            "Head/Neck": "Soft-tissue detail in head and neck.",
+            "CTA/Vascular": "CTA vessel window for contrast studies.",
+            "Kidney": "Renal parenchyma and collecting system.",
+            "Pancreas": "Pancreatic parenchyma detail.",
+            "Trauma": "Wide soft-tissue window for trauma.",
+            "Subdural": "Subdural hematoma evaluation.",
+            "Stroke": "Narrow brain window for early ischemia.",
+            "Body": "Broad soft-tissue body window.",
+            "Extremity/MSK": "Musculoskeletal soft-tissue detail.",
+            "Temporal Bone": "Very wide window for temporal bone.",
+            "Sinus": "Paranasal sinus soft-tissue window.",
+            "Angio Bone Sub": "Bone-subtraction angiography view.",
+            "Lung HRCT": "High-resolution lung detail.",
+            "Orbits": "Orbital soft-tissue structures.",
+            "CTA Head/Neck": "CTA head and neck vessels.",
+            "Arterial": "Arterial phase vascular window.",
+            "Venous": "Venous phase vascular window.",
+            "Colon/Bowel": "Bowel wall and lumen evaluation.",
+            "Adrenal": "Adrenal gland assessment.",
+            "Gallbladder": "Gallbladder and biliary detail.",
+            "Skin/Subcutaneous": "Skin and subcutaneous tissues.",
+            "Cardiac": "Cardiac soft-tissue structures.",
+        },
+        "zh-TW": {
+            "Soft Tissue": "一般軟組織對比視窗。",
+            "Lung": "適合肺實質與氣道觀察。",
+            "Bone": "高對比顯示皮質骨與骨折。",
+            "Brain": "腦實質常用腦窗。",
+            "Abdomen": "腹部軟組織通用視窗。",
+            "Liver": "肝實質細節視窗。",
+            "Mediastinum": "縱膈軟組織結構。",
+            "Spine": "脊椎軟組織與椎管評估。",
+            "Pelvis": "骨盆軟組織概覽。",
+            "Head/Neck": "頭頸部軟組織細節。",
+            "CTA/Vascular": "CTA 血管對比視窗。",
+            "Kidney": "腎實質與集尿系統。",
+            "Pancreas": "胰臟實質細節。",
+            "Trauma": "創傷用寬範圍軟組織窗。",
+            "Subdural": "硬膜下出血評估。",
+            "Stroke": "窄腦窗，用於早期缺血。",
+            "Body": "全身寬範圍軟組織窗。",
+            "Extremity/MSK": "四肢肌骨軟組織。",
+            "Temporal Bone": "顳骨超寬視窗。",
+            "Sinus": "鼻竇軟組織視窗。",
+            "Angio Bone Sub": "骨扣除血管影像。",
+            "Lung HRCT": "高解析肺部細節。",
+            "Orbits": "眼眶軟組織結構。",
+            "CTA Head/Neck": "頭頸部 CTA 血管。",
+            "Arterial": "動脈期血管視窗。",
+            "Venous": "靜脈期血管視窗。",
+            "Colon/Bowel": "腸道壁與腔內評估。",
+            "Adrenal": "腎上腺評估。",
+            "Gallbladder": "膽囊與膽道細節。",
+            "Skin/Subcutaneous": "皮膚與皮下組織。",
+            "Cardiac": "心臟軟組織結構。",
+        },
+        "zh-CN": {
+            "Soft Tissue": "常用软组织对比视窗。",
+            "Lung": "适合肺实质与气道观察。",
+            "Bone": "高对比显示皮质骨与骨折。",
+            "Brain": "脑实质常用脑窗。",
+            "Abdomen": "腹部软组织通用视窗。",
+            "Liver": "肝实质细节视窗。",
+            "Mediastinum": "纵隔软组织结构。",
+            "Spine": "脊柱软组织与椎管评估。",
+            "Pelvis": "骨盆软组织概览。",
+            "Head/Neck": "头颈部软组织细节。",
+            "CTA/Vascular": "CTA 血管对比视窗。",
+            "Kidney": "肾实质与集合系统。",
+            "Pancreas": "胰腺实质细节。",
+            "Trauma": "创伤用宽范围软组织窗。",
+            "Subdural": "硬膜下出血评估。",
+            "Stroke": "窄脑窗，用于早期缺血。",
+            "Body": "全身宽范围软组织窗。",
+            "Extremity/MSK": "四肢肌骨软组织。",
+            "Temporal Bone": "颞骨超宽视窗。",
+            "Sinus": "鼻窦软组织视窗。",
+            "Angio Bone Sub": "骨扣除血管影像。",
+            "Lung HRCT": "高分辨率肺部细节。",
+            "Orbits": "眼眶软组织结构。",
+            "CTA Head/Neck": "头颈部 CTA 血管。",
+            "Arterial": "动脉期血管视窗。",
+            "Venous": "静脉期血管视窗。",
+            "Colon/Bowel": "肠壁与腔内评估。",
+            "Adrenal": "肾上腺评估。",
+            "Gallbladder": "胆囊与胆道细节。",
+            "Skin/Subcutaneous": "皮肤与皮下组织。",
+            "Cardiac": "心脏软组织结构。",
+        },
+        "es": {
+            "Soft Tissue": "Ventana general de tejidos blandos.",
+            "Lung": "Optimizada para parénquima pulmonar.",
+            "Bone": "Alto contraste para hueso cortical.",
+            "Brain": "Ventana cerebral estándar.",
+            "Abdomen": "Ventana general de abdomen.",
+            "Liver": "Detalle del parénquima hepático.",
+            "Mediastinum": "Estructuras mediastínicas.",
+            "Spine": "Evaluación de columna y canal.",
+            "Pelvis": "Vista general de pelvis.",
+            "Head/Neck": "Detalle de cabeza y cuello.",
+            "CTA/Vascular": "Ventana vascular para CTA.",
+            "Kidney": "Parénquima renal y colector.",
+            "Pancreas": "Detalle del páncreas.",
+            "Trauma": "Ventana amplia para trauma.",
+            "Subdural": "Evaluación de hematoma subdural.",
+            "Stroke": "Ventana estrecha para isquemia.",
+            "Body": "Ventana amplia de tejido blando.",
+            "Extremity/MSK": "Detalle musculoesquelético.",
+            "Temporal Bone": "Ventana muy amplia del temporal.",
+            "Sinus": "Ventana de senos paranasales.",
+            "Angio Bone Sub": "Sustracción ósea en angiografía.",
+            "Lung HRCT": "Detalle pulmonar de alta resolución.",
+            "Orbits": "Estructuras orbitarias.",
+            "CTA Head/Neck": "Vasos de cabeza y cuello en CTA.",
+            "Arterial": "Ventana vascular fase arterial.",
+            "Venous": "Ventana vascular fase venosa.",
+            "Colon/Bowel": "Evaluación de colon e intestino.",
+            "Adrenal": "Evaluación suprarrenal.",
+            "Gallbladder": "Detalle vesicular y biliar.",
+            "Skin/Subcutaneous": "Piel y tejido subcutáneo.",
+            "Cardiac": "Estructuras cardiacas.",
+        },
+    }
 
     _metadata_password: str = os.getenv("DICOM_METADATA_PASSWORD", "dicom")
 
@@ -535,6 +672,7 @@ class DicomViewerState(rx.State):
             center, width = presets[preset_name]
             self.window_center = float(center)
             self.window_width = float(width)
+            self.selected_preset = preset_name
             self._process_image()
 
     @rx.event
@@ -543,7 +681,13 @@ class DicomViewerState(rx.State):
         self.reset_zoom()
         self.window_center = 40.0
         self.window_width = 400.0
+        self.selected_preset = ""
         self._process_image()
+
+    @rx.event
+    def set_tooltip_language(self, value: str):
+        if value in self._preset_descriptions:
+            self.tooltip_language = value
 
     @rx.var
     def preset_options(self) -> list[str]:
@@ -581,3 +725,9 @@ class DicomViewerState(rx.State):
             "Skin/Subcutaneous",
             "Cardiac",
         ]
+
+    @rx.var
+    def preset_tooltips(self) -> dict[str, str]:
+        return self._preset_descriptions.get(
+            self.tooltip_language, self._preset_descriptions["en"]
+        )
