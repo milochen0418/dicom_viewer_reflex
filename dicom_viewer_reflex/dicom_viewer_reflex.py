@@ -59,6 +59,29 @@ def directory_selector() -> rx.Component:
     )
 
 
+def workflow_steps() -> rx.Component:
+    """Step indicator for the basic flow."""
+
+    def step_chip(label: str, is_active) -> rx.Component:
+        return rx.el.div(
+            rx.el.span(label, class_name="text-xs font-medium"),
+            class_name=rx.cond(
+                is_active,
+                "px-3 py-1 rounded-full bg-blue-600/20 text-blue-300 border border-blue-500/40",
+                "px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800",
+            ),
+        )
+
+    return rx.el.div(
+        step_chip("1. Select Path", DicomViewerState.workflow_step == "select"),
+        rx.el.div(class_name="h-px w-6 bg-slate-800"),
+        step_chip("2. Scan Results", DicomViewerState.workflow_step == "list"),
+        rx.el.div(class_name="h-px w-6 bg-slate-800"),
+        step_chip("3. Viewer", DicomViewerState.workflow_step == "viewer"),
+        class_name="flex items-center justify-center gap-3 py-6 px-4",
+    )
+
+
 def directory_browser_dialog() -> rx.Component:
     """Modal dialog for browsing server-side directories."""
     return rx.cond(
@@ -168,15 +191,22 @@ def file_browser() -> rx.Component:
                     ),
                     class_name="flex items-center gap-3",
                 ),
-                rx.el.a(
+                rx.el.div(
+                    rx.el.button(
+                        rx.icon("corner-up-left", class_name="h-4 w-4 mr-2"),
+                        "Change Directory",
+                        on_click=DicomViewerState.reset_scan,
+                        class_name="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center",
+                    ),
                     rx.el.button(
                         rx.icon("play", class_name="h-4 w-4 mr-2 fill-current"),
                         "Open Viewer",
+                        on_click=DicomViewerState.open_viewer,
                         class_name="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow-lg hover:shadow-blue-500/25",
                     ),
-                    href="/viewer",
+                    class_name="flex items-center gap-2",
                 ),
-                class_name="flex items-center justify-between mb-6 px-1",
+                class_name="flex items-center justify-between mb-6 px-1 gap-4",
             ),
             rx.el.div(
                 rx.foreach(
@@ -192,6 +222,7 @@ def file_browser() -> rx.Component:
 def landing_content() -> rx.Component:
     """Main content area for the landing page."""
     return rx.el.div(
+        workflow_steps(),
         directory_selector(),
         rx.cond(
             DicomViewerState.is_loading,

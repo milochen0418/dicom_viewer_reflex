@@ -20,6 +20,7 @@ class DicomViewerState(rx.State):
     directory_browser_dirs: list[str] = []
     directory_browser_error: str = ""
     suppress_directory_dialog: bool = False
+    workflow_step: str = "select"
     dicom_files: list[str] = []
     file_names: list[str] = []
     current_index: int = 0
@@ -147,6 +148,7 @@ class DicomViewerState(rx.State):
             self.is_loading = True
             self.error_message = ""
             self.has_loaded = False
+            self.workflow_step = "select"
             self.dicom_files = []
             self.file_names = []
             self.current_image_base64 = "/placeholder.svg"
@@ -185,6 +187,7 @@ class DicomViewerState(rx.State):
                     self.file_names = valid_names
                     self.has_loaded = True
                     self.current_index = 0
+                    self.workflow_step = "list"
                 return DicomViewerState.load_selected_image
         except PermissionError as e:
             logging.exception(f"Error scanning directory: {e}")
@@ -201,6 +204,32 @@ class DicomViewerState(rx.State):
         finally:
             async with self:
                 self.is_loading = False
+
+    @rx.event
+    def reset_scan(self):
+        """Return to directory selection step while keeping chosen path."""
+        self.error_message = ""
+        self.has_loaded = False
+        self.workflow_step = "select"
+        self.dicom_files = []
+        self.file_names = []
+        self.current_index = 0
+        self.current_image_base64 = "/placeholder.svg"
+        self.metadata_unlocked = False
+        self.metadata_password_input = ""
+        self.metadata_password_error = ""
+
+    @rx.event
+    def open_viewer(self):
+        """Navigate to viewer and mark workflow step."""
+        self.workflow_step = "viewer"
+        return rx.redirect("/viewer")
+
+    @rx.event
+    def back_to_results(self):
+        """Navigate back to scan results."""
+        self.workflow_step = "list" if self.has_loaded else "select"
+        return rx.redirect("/")
 
     @rx.event
     def handle_file_selection(self, index: int):

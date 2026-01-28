@@ -303,10 +303,10 @@ def viewer_layout() -> rx.Component:
     return rx.el.div(
         rx.el.div(
             rx.el.div(
-                rx.el.a(
+                rx.el.button(
                     rx.icon("arrow-left", class_name="h-4 w-4 mr-2"),
-                    "Back to Library",
-                    href="/",
+                    "Back to Results",
+                    on_click=DicomViewerState.back_to_results,
                     class_name="flex items-center text-slate-400 hover:text-white transition-colors text-sm font-medium",
                 ),
                 rx.el.div(
