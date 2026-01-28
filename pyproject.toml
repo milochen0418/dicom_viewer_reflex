@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "dicom_viewer_reflex"
+name = "dicom_viewer"
 version = "0.1.0"
 description = ""
 authors = ["Milo Chen <milo_chen@mail2000.com.tw>"]
-packages = [{ include = "dicom_viewer_reflex" }]
+packages = [{ include = "dicom_viewer" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
