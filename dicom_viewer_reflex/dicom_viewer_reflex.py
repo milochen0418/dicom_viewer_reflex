@@ -41,9 +41,11 @@ def directory_selector() -> rx.Component:
                     "Scan Directory",
                     on_mouse_down=DicomViewerState.suppress_directory_dialog_once,
                     on_click=DicomViewerState.scan_directory,
-                    class_name="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-r-lg font-medium transition-colors flex items-center whitespace-nowrap",
+                    disabled=DicomViewerState.directory_browser_visible,
+                    class_name="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-r-lg font-medium transition-colors flex items-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600",
                 ),
-                class_name="flex shadow-lg rounded-lg",
+                directory_browser_dialog(),
+                class_name="flex shadow-lg rounded-lg relative",
             ),
             rx.cond(
                 DicomViewerState.error_message != "",
@@ -83,74 +85,71 @@ def workflow_steps() -> rx.Component:
 
 
 def directory_browser_dialog() -> rx.Component:
-    """Modal dialog for browsing server-side directories."""
+    """Dropdown menu for browsing server-side directories."""
     return rx.cond(
         DicomViewerState.directory_browser_visible,
         rx.el.div(
             rx.el.div(
-                rx.el.div(
-                    rx.el.h3(
-                        "Select DICOM Directory",
-                        class_name="text-lg font-semibold text-slate-100",
-                    ),
-                    rx.el.p(
-                        DicomViewerState.directory_browser_path,
-                        class_name="text-xs text-slate-400 font-mono break-all mt-2",
-                    ),
-                    class_name="mb-4",
+                rx.el.h3(
+                    "Select DICOM Directory",
+                    class_name="text-lg font-semibold text-slate-100",
                 ),
-                rx.el.div(
-                    rx.el.button(
-                        rx.icon("arrow-up", class_name="h-4 w-4 mr-2"),
-                        "Up",
-                        on_click=DicomViewerState.go_up_directory,
-                        disabled=~DicomViewerState.can_go_up_directory,
-                        class_name="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed",
-                    ),
-                    rx.el.button(
-                        "Select This Folder",
-                        on_click=DicomViewerState.select_current_directory,
-                        class_name="px-3 py-2 text-xs rounded-lg bg-blue-600 hover:bg-blue-500 text-white",
-                    ),
-                    rx.el.button(
-                        "Cancel",
-                        on_click=DicomViewerState.close_directory_dialog,
-                        class_name="px-3 py-2 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200",
-                    ),
-                    class_name="flex flex-wrap gap-2 mb-4",
+                rx.el.p(
+                    DicomViewerState.directory_browser_path,
+                    class_name="text-xs text-slate-400 font-mono break-all mt-2",
                 ),
-                rx.cond(
-                    DicomViewerState.directory_browser_error != "",
-                    rx.el.div(
-                        rx.icon("alert-triangle", class_name="h-4 w-4 mr-2"),
-                        DicomViewerState.directory_browser_error,
-                        class_name="mb-3 flex items-center text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-900/50",
-                    ),
-                ),
-                rx.el.div(
-                    rx.foreach(
-                        DicomViewerState.directory_browser_dirs,
-                        lambda path: rx.el.button(
-                            rx.el.div(
-                                rx.icon(
-                                    "folder",
-                                    class_name="h-4 w-4 mr-2 text-slate-400",
-                                ),
-                                rx.el.span(
-                                    path,
-                                    class_name="text-xs text-slate-200 font-mono break-all",
-                                ),
-                                class_name="flex items-center",
-                            ),
-                            on_click=lambda: DicomViewerState.open_directory(path),
-                            class_name="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors",
-                        ),
-                    ),
-                    class_name="max-h-72 overflow-y-auto border border-slate-800 rounded-lg p-2 bg-slate-950",
-                ),
-                class_name="bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-5 w-full max-w-2xl",
+                class_name="mb-4",
             ),
-            class_name="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4",
+            rx.el.div(
+                rx.el.button(
+                    rx.icon("arrow-up", class_name="h-4 w-4 mr-2"),
+                    "Up",
+                    on_click=DicomViewerState.go_up_directory,
+                    disabled=~DicomViewerState.can_go_up_directory,
+                    class_name="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed",
+                ),
+                rx.el.button(
+                    "Select This Folder",
+                    on_click=DicomViewerState.select_current_directory,
+                    class_name="px-3 py-2 text-xs rounded-lg bg-blue-600 hover:bg-blue-500 text-white",
+                ),
+                rx.el.button(
+                    "Cancel",
+                    on_click=DicomViewerState.close_directory_dialog,
+                    class_name="px-3 py-2 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200",
+                ),
+                class_name="flex flex-wrap gap-2 mb-4",
+            ),
+            rx.cond(
+                DicomViewerState.directory_browser_error != "",
+                rx.el.div(
+                    rx.icon("alert-triangle", class_name="h-4 w-4 mr-2"),
+                    DicomViewerState.directory_browser_error,
+                    class_name="mb-3 flex items-center text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-900/50",
+                ),
+            ),
+            rx.el.div(
+                rx.foreach(
+                    DicomViewerState.directory_browser_dirs,
+                    lambda path: rx.el.button(
+                        rx.el.div(
+                            rx.icon(
+                                "folder",
+                                class_name="h-4 w-4 mr-2 text-slate-400",
+                            ),
+                            rx.el.span(
+                                path,
+                                class_name="text-xs text-slate-200 font-mono break-all",
+                            ),
+                            class_name="flex items-center",
+                        ),
+                        on_click=lambda: DicomViewerState.open_directory(path),
+                        class_name="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors",
+                    ),
+                ),
+                class_name="max-h-72 overflow-y-auto border border-slate-800 rounded-lg p-2 bg-slate-950",
+            ),
+            class_name="absolute left-0 right-0 top-full mt-2 z-50 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-5",
         ),
     )
 
