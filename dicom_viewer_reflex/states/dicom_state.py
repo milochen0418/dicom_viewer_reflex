@@ -227,6 +227,7 @@ class DicomViewerState(rx.State):
         self.metadata_unlocked = False
         self.metadata_password_input = ""
         self.metadata_password_error = ""
+        return DicomViewerState.open_directory_dialog
 
     @rx.event
     def open_viewer(self):
