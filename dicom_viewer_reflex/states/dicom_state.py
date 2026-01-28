@@ -55,6 +55,50 @@ class DicomViewerState(rx.State):
 
     _metadata_password: str = os.getenv("DICOM_METADATA_PASSWORD", "dicom")
 
+    def _compute_slice_position(self, ds) -> float | None:
+        """Compute slice position along the normal direction when possible."""
+        pos = ds.get("ImagePositionPatient", None)
+        iop = ds.get("ImageOrientationPatient", None)
+        if pos is not None and iop is not None:
+            try:
+                if len(iop) >= 6 and len(pos) >= 3:
+                    row = np.array([float(x) for x in iop[:3]], dtype=float)
+                    col = np.array([float(x) for x in iop[3:6]], dtype=float)
+                    normal = np.cross(row, col)
+                    if np.linalg.norm(normal) > 0:
+                        position = float(np.dot(normal, np.array(pos[:3], dtype=float)))
+                        return position
+            except Exception:
+                pass
+        if pos is not None:
+            try:
+                if len(pos) >= 3:
+                    return float(pos[2])
+            except Exception:
+                pass
+        slice_location = ds.get("SliceLocation", None)
+        if slice_location is not None:
+            try:
+                return float(slice_location)
+            except Exception:
+                return None
+        return None
+
+    def _dicom_sort_key(self, ds, file_path: Path) -> tuple:
+        """Return a stable sort key for DICOM slice ordering."""
+        series_uid = str(ds.get("SeriesInstanceUID", ""))
+        position = self._compute_slice_position(ds)
+        instance = ds.get("InstanceNumber", None)
+        try:
+            instance_val = float(instance) if instance is not None else None
+        except Exception:
+            instance_val = None
+        primary = position if position is not None else (
+            instance_val if instance_val is not None else float("inf")
+        )
+        secondary = instance_val if instance_val is not None else float("inf")
+        return (series_uid, primary, secondary, file_path.name.lower())
+
     @rx.var
     def total_images(self) -> int:
         return len(self.dicom_files)
@@ -177,20 +221,24 @@ class DicomViewerState(rx.State):
                     self.is_loading = False
                 return
             files = sorted([f for f in path.iterdir() if f.is_file()])
-            valid_dicoms = []
-            valid_names = []
+            sortable_dicoms: list[tuple[tuple, Path, str]] = []
             for file_path in files:
                 try:
-                    pydicom.dcmread(file_path, stop_before_pixels=True)
-                    valid_dicoms.append(file_path.absolute())
-                    valid_names.append(file_path.name)
+                    ds = pydicom.dcmread(file_path, stop_before_pixels=True)
+                    sort_key = self._dicom_sort_key(ds, file_path)
+                    sortable_dicoms.append(
+                        (sort_key, file_path.absolute(), file_path.name)
+                    )
                 except Exception as e:
                     logging.exception(f"Skipping invalid DICOM file {file_path}: {e}")
                     continue
-            if not valid_dicoms:
+            if not sortable_dicoms:
                 async with self:
                     self.error_message = "No valid DICOM files found in this directory."
             else:
+                sortable_dicoms.sort(key=lambda item: item[0])
+                valid_dicoms = [item[1] for item in sortable_dicoms]
+                valid_names = [item[2] for item in sortable_dicoms]
                 async with self:
                     self.dicom_files = valid_dicoms
                     self.file_names = valid_names
