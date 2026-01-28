@@ -13,7 +13,13 @@ import base64
 class DicomViewerState(rx.State):
     """State for managing DICOM file selection and loading."""
     _default_dicom_dir: str = "/Users/Shared/DICOM" if sys.platform == "darwin" else ""
+    _default_browser_dir: str = _default_dicom_dir or str(Path.home())
     directory_path: str = os.getenv("PUBLIC_DICOM_DIR", _default_dicom_dir)
+    directory_browser_visible: bool = False
+    directory_browser_path: str = os.getenv("PUBLIC_DICOM_DIR", _default_browser_dir)
+    directory_browser_dirs: list[str] = []
+    directory_browser_error: str = ""
+    suppress_directory_dialog: bool = False
     dicom_files: list[str] = []
     file_names: list[str] = []
     current_index: int = 0
@@ -65,6 +71,72 @@ class DicomViewerState(rx.State):
     def set_directory(self, path: str):
         """Update the directory path state."""
         self.directory_path = path
+        if self.error_message:
+            self.error_message = ""
+
+    def _normalize_directory_path(self, path: str) -> Path:
+        candidate = Path(path).expanduser()
+        if candidate.exists() and candidate.is_dir():
+            return candidate
+        fallback = Path(self._default_browser_dir).expanduser()
+        return fallback if fallback.exists() and fallback.is_dir() else Path("/")
+
+    def _load_directory_entries(self, path: Path) -> None:
+        try:
+            dirs = sorted(
+                [p for p in path.iterdir() if p.is_dir()],
+                key=lambda p: p.name.lower(),
+            )
+            self.directory_browser_dirs = [str(p) for p in dirs]
+            self.directory_browser_error = ""
+        except PermissionError as e:
+            logging.exception(f"Error scanning directory: {e}")
+            self.directory_browser_dirs = []
+            self.directory_browser_error = (
+                "Permission denied when accessing this folder. "
+                "On macOS, grant Terminal/VS Code access to Desktop or "
+                "enable Full Disk Access in System Settings > Privacy & Security."
+            )
+        except Exception as e:
+            logging.exception(f"Error scanning directory: {e}")
+            self.directory_browser_dirs = []
+            self.directory_browser_error = f"Error accessing directory: {str(e)}"
+
+    @rx.event
+    def suppress_directory_dialog_once(self):
+        self.suppress_directory_dialog = True
+
+    @rx.event
+    def open_directory_dialog(self):
+        if self.suppress_directory_dialog:
+            self.suppress_directory_dialog = False
+            return
+        base_path = self.directory_path or self.directory_browser_path
+        path = self._normalize_directory_path(base_path)
+        self.directory_browser_path = str(path)
+        self.directory_browser_visible = True
+        self._load_directory_entries(path)
+
+    @rx.event
+    def close_directory_dialog(self):
+        self.directory_browser_visible = False
+
+    @rx.event
+    def go_up_directory(self):
+        path = self._normalize_directory_path(self.directory_browser_path).parent
+        self.directory_browser_path = str(path)
+        self._load_directory_entries(path)
+
+    @rx.event
+    def open_directory(self, path: str):
+        next_path = self._normalize_directory_path(path)
+        self.directory_browser_path = str(next_path)
+        self._load_directory_entries(next_path)
+
+    @rx.event
+    def select_current_directory(self):
+        self.directory_path = self.directory_browser_path
+        self.directory_browser_visible = False
         if self.error_message:
             self.error_message = ""
 
