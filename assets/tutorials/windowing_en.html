@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CT Windowing Tutorial (EN)</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #0b1220; color: #e2e8f0; }
+    h1 { margin: 0 0 8px; font-size: 18px; }
+    p, li { line-height: 1.5; font-size: 14px; color: #cbd5e1; }
+    .note { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: 10px 12px; border-radius: 10px; margin: 12px 0; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    section { background: rgba(15,23,42,.65); border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 12px; }
+    section h2 { margin: 0 0 8px; font-size: 15px; }
+    .small { font-size: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <h1>CT Windowing Tutorial (EN)</h1>
+  <p>Think of windowing as “brightness + contrast for medical images”. Presets help you quickly see a specific kind of tissue.</p>
+  <div class="note">
+    <div class="small">Quick guide</div>
+    <ul>
+      <li><b>Level</b>: the gray value you focus on.</li>
+      <li><b>Width</b>: how wide the visible gray range is.</li>
+      <li>Presets are a helpful starting point, not a single correct answer.</li>
+    </ul>
+  </div>
+
+  <div class="grid">
+    <section id="soft-tissue"><h2>Soft Tissue</h2><p>Good for most organs and muscles.</p></section>
+    <section id="lung"><h2>Lung</h2><p>Best for lungs and airways.</p></section>
+    <section id="bone"><h2>Bone</h2><p>Makes bones and fractures easier to see.</p></section>
+    <section id="brain"><h2>Brain</h2><p>Standard view for brain tissue.</p></section>
+    <section id="abdomen"><h2>Abdomen</h2><p>General view for belly organs.</p></section>
+    <section id="liver"><h2>Liver</h2><p>Clearer view of liver tissue.</p></section>
+    <section id="mediastinum"><h2>Mediastinum</h2><p>Middle chest area (heart/vessels nearby).</p></section>
+    <section id="spine"><h2>Spine</h2><p>Helps check the spine and spinal canal.</p></section>
+    <section id="pelvis"><h2>Pelvis</h2><p>General view of pelvic organs.</p></section>
+    <section id="head-neck"><h2>Head/Neck</h2><p>Soft tissues in head and neck.</p></section>
+    <section id="cta-vascular"><h2>CTA/Vascular</h2><p>Shows vessels in contrast-enhanced studies.</p></section>
+    <section id="kidney"><h2>Kidney</h2><p>Helps see kidneys clearly.</p></section>
+    <section id="pancreas"><h2>Pancreas</h2><p>Better view of the pancreas.</p></section>
+    <section id="trauma"><h2>Trauma</h2><p>Wide soft-tissue view for quick injury checks.</p></section>
+    <section id="subdural"><h2>Subdural</h2><p>Helps see bleeding under the skull.</p></section>
+    <section id="stroke"><h2>Stroke</h2><p>Narrow brain view for early ischemia.</p></section>
+    <section id="body"><h2>Body</h2><p>Wide soft-tissue view for whole body.</p></section>
+    <section id="extremity-msk"><h2>Extremity/MSK</h2><p>For arms/legs soft tissues.</p></section>
+    <section id="temporal-bone"><h2>Temporal Bone</h2><p>Very wide view for tiny ear bones.</p></section>
+    <section id="sinus"><h2>Sinus</h2><p>For sinuses around the nose.</p></section>
+    <section id="angio-bone-sub"><h2>Angio Bone Sub</h2><p>Imagine bone is removed to focus on vessels.</p></section>
+    <section id="lung-hrct"><h2>Lung HRCT</h2><p>Extra detail for lungs.</p></section>
+    <section id="orbits"><h2>Orbits</h2><p>For eye sockets and surrounding tissues.</p></section>
+    <section id="cta-head-neck"><h2>CTA Head/Neck</h2><p>Vessels in head and neck.</p></section>
+    <section id="arterial"><h2>Arterial</h2><p>When contrast is bright in arteries.</p></section>
+    <section id="venous"><h2>Venous</h2><p>When contrast moves into veins/organs.</p></section>
+    <section id="colon-bowel"><h2>Colon/Bowel</h2><p>For bowel wall and lumen.</p></section>
+    <section id="adrenal"><h2>Adrenal</h2><p>For adrenal glands (above kidneys).</p></section>
+    <section id="gallbladder"><h2>Gallbladder</h2><p>For gallbladder and bile ducts.</p></section>
+    <section id="skin-subcutaneous"><h2>Skin/Subcutaneous</h2><p>For skin and fat layer.</p></section>
+    <section id="cardiac"><h2>Cardiac</h2><p>For heart soft tissues.</p></section>
+  </div>
+
+  <p class="small">Learning-only simplified explanations.</p>
+</body>
+</html>

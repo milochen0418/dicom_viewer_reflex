@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutorial de Windowing CT (ES)</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #0b1220; color: #e2e8f0; }
+    h1 { margin: 0 0 8px; font-size: 18px; }
+    p, li { line-height: 1.5; font-size: 14px; color: #cbd5e1; }
+    .note { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: 10px 12px; border-radius: 10px; margin: 12px 0; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    section { background: rgba(15,23,42,.65); border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 12px; }
+    section h2 { margin: 0 0 8px; font-size: 15px; }
+    .small { font-size: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <h1>Tutorial de Windowing CT (ES)</h1>
+  <p>Piensa en el windowing como “brillo + contraste” para imágenes médicas. Los presets te ayudan a ver rápido un tipo de tejido.</p>
+  <div class="note">
+    <div class="small">Guía rápida</div>
+    <ul>
+      <li><b>Level</b>: el valor gris en el que te enfocas.</li>
+      <li><b>Width</b>: qué tan grande es el rango de grises visible.</li>
+      <li>Los presets son un buen inicio, no una única verdad.</li>
+    </ul>
+  </div>
+
+  <div class="grid">
+    <section id="soft-tissue"><h2>Soft Tissue</h2><p>Para la mayoría de órganos y músculos.</p></section>
+    <section id="lung"><h2>Lung</h2><p>Para ver pulmones y vías aéreas.</p></section>
+    <section id="bone"><h2>Bone</h2><p>Hace más claros los huesos y fracturas.</p></section>
+    <section id="brain"><h2>Brain</h2><p>Vista estándar del cerebro.</p></section>
+    <section id="abdomen"><h2>Abdomen</h2><p>Vista general del abdomen.</p></section>
+    <section id="liver"><h2>Liver</h2><p>Para ver el hígado con más detalle.</p></section>
+    <section id="mediastinum"><h2>Mediastinum</h2><p>Muestra el centro del pecho.</p></section>
+    <section id="spine"><h2>Spine</h2><p>Para revisar la columna y el canal.</p></section>
+    <section id="pelvis"><h2>Pelvis</h2><p>Vista general de la pelvis.</p></section>
+    <section id="head-neck"><h2>Head/Neck</h2><p>Tejidos de cabeza y cuello.</p></section>
+    <section id="cta-vascular"><h2>CTA/Vascular</h2><p>Para vasos con contraste.</p></section>
+    <section id="kidney"><h2>Kidney</h2><p>Para ver los riñones.</p></section>
+    <section id="pancreas"><h2>Pancreas</h2><p>Para ver el páncreas.</p></section>
+    <section id="trauma"><h2>Trauma</h2><p>Vista amplia para lesiones.</p></section>
+    <section id="subdural"><h2>Subdural</h2><p>Para ver sangrado bajo el cráneo.</p></section>
+    <section id="stroke"><h2>Stroke</h2><p>Vista estrecha para ictus temprano.</p></section>
+    <section id="body"><h2>Body</h2><p>Vista amplia de tejidos blandos.</p></section>
+    <section id="extremity-msk"><h2>Extremity/MSK</h2><p>Para tejidos de brazos y piernas.</p></section>
+    <section id="temporal-bone"><h2>Temporal Bone</h2><p>Para huesos pequeños del oído.</p></section>
+    <section id="sinus"><h2>Sinus</h2><p>Para senos paranasales.</p></section>
+    <section id="angio-bone-sub"><h2>Angio Bone Sub</h2><p>Imagina quitar el hueso para ver vasos.</p></section>
+    <section id="lung-hrct"><h2>Lung HRCT</h2><p>Más detalle del pulmón.</p></section>
+    <section id="orbits"><h2>Orbits</h2><p>Para órbitas y tejidos cercanos.</p></section>
+    <section id="cta-head-neck"><h2>CTA Head/Neck</h2><p>Vasos de cabeza y cuello.</p></section>
+    <section id="arterial"><h2>Arterial</h2><p>Cuando el contraste está brillante en arterias.</p></section>
+    <section id="venous"><h2>Venous</h2><p>Cuando el contraste llega a venas/órganos.</p></section>
+    <section id="colon-bowel"><h2>Colon/Bowel</h2><p>Para pared del intestino y lumen.</p></section>
+    <section id="adrenal"><h2>Adrenal</h2><p>Para glándulas suprarrenales.</p></section>
+    <section id="gallbladder"><h2>Gallbladder</h2><p>Para vesícula y vía biliar.</p></section>
+    <section id="skin-subcutaneous"><h2>Skin/Subcutaneous</h2><p>Para piel y capa de grasa.</p></section>
+    <section id="cardiac"><h2>Cardiac</h2><p>Para tejidos del corazón.</p></section>
+  </div>
+
+  <p class="small">Explicaciones simplificadas para aprender.</p>
+</body>
+</html>

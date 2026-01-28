@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CT Windowing 教学（简中）</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif; background: #0b1220; color: #e2e8f0; }
+    h1 { margin: 0 0 8px; font-size: 18px; }
+    p, li { line-height: 1.5; font-size: 14px; color: #cbd5e1; }
+    .note { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: 10px 12px; border-radius: 10px; margin: 12px 0; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    section { background: rgba(15,23,42,.65); border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 12px; }
+    section h2 { margin: 0 0 8px; font-size: 15px; }
+    .small { font-size: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <h1>CT Windowing 教学（简中）</h1>
+  <p>你可以把 windowing 想成“让某些灰度更清楚”。preset 是快速切换“要看什么”。</p>
+  <div class="note">
+    <div class="small">快速理解</div>
+    <ul>
+      <li><b>Level（中心）</b>：你想看的灰度中心。</li>
+      <li><b>Width（宽度）</b>：你想看的灰度范围。</li>
+      <li>preset 是“好用的起点”，不是唯一正确。</li>
+    </ul>
+  </div>
+
+  <div class="grid">
+    <section id="soft-tissue"><h2>Soft Tissue（软组织）</h2><p>看大部分器官和肌肉。</p></section>
+    <section id="lung"><h2>Lung（肺窗）</h2><p>看肺部和气道。</p></section>
+    <section id="bone"><h2>Bone（骨窗）</h2><p>让骨头和骨折更清楚。</p></section>
+    <section id="brain"><h2>Brain（脑窗）</h2><p>脑部常用视窗。</p></section>
+    <section id="abdomen"><h2>Abdomen（腹部）</h2><p>看腹部器官。</p></section>
+    <section id="liver"><h2>Liver（肝）</h2><p>看肝脏更清楚。</p></section>
+    <section id="mediastinum"><h2>Mediastinum（纵隔）</h2><p>看胸部中间区域。</p></section>
+    <section id="spine"><h2>Spine（脊柱）</h2><p>看脊柱与椎管。</p></section>
+    <section id="pelvis"><h2>Pelvis（骨盆）</h2><p>看骨盆器官。</p></section>
+    <section id="head-neck"><h2>Head/Neck（头颈）</h2><p>看头颈部软组织。</p></section>
+    <section id="cta-vascular"><h2>CTA/Vascular（血管/CTA）</h2><p>看打了显影剂的血管。</p></section>
+    <section id="kidney"><h2>Kidney（肾）</h2><p>看肾脏更清楚。</p></section>
+    <section id="pancreas"><h2>Pancreas（胰腺）</h2><p>看胰腺更清楚。</p></section>
+    <section id="trauma"><h2>Trauma（创伤）</h2><p>用更宽范围快速看受伤。</p></section>
+    <section id="subdural"><h2>Subdural（硬膜下）</h2><p>帮助看颅骨下出血。</p></section>
+    <section id="stroke"><h2>Stroke（中风）</h2><p>窄脑窗，帮助看早期缺血。</p></section>
+    <section id="body"><h2>Body（全身）</h2><p>全身软组织大范围。</p></section>
+    <section id="extremity-msk"><h2>Extremity/MSK（四肢/肌骨）</h2><p>看四肢软组织。</p></section>
+    <section id="temporal-bone"><h2>Temporal Bone（颞骨）</h2><p>看耳朵附近细小骨头。</p></section>
+    <section id="sinus"><h2>Sinus（鼻窦）</h2><p>看鼻窦。</p></section>
+    <section id="angio-bone-sub"><h2>Angio Bone Sub（骨扣除血管）</h2><p>想像把骨头“去掉”，更专注看血管。</p></section>
+    <section id="lung-hrct"><h2>Lung HRCT（高分辨肺）</h2><p>更细的肺部细节。</p></section>
+    <section id="orbits"><h2>Orbits（眼眶）</h2><p>看眼眶结构。</p></section>
+    <section id="cta-head-neck"><h2>CTA Head/Neck（头颈 CTA）</h2><p>看头颈部血管。</p></section>
+    <section id="arterial"><h2>Arterial（动脉期）</h2><p>显影剂在动脉里最亮的时候。</p></section>
+    <section id="venous"><h2>Venous（静脉期）</h2><p>显影剂跑到静脉/器官后。</p></section>
+    <section id="colon-bowel"><h2>Colon/Bowel（肠道）</h2><p>看肠壁和腔内。</p></section>
+    <section id="adrenal"><h2>Adrenal（肾上腺）</h2><p>看肾上腺。</p></section>
+    <section id="gallbladder"><h2>Gallbladder（胆囊）</h2><p>看胆囊与胆道。</p></section>
+    <section id="skin-subcutaneous"><h2>Skin/Subcutaneous（皮肤/皮下）</h2><p>看皮肤与皮下脂肪。</p></section>
+    <section id="cardiac"><h2>Cardiac（心脏）</h2><p>看心脏软组织。</p></section>
+  </div>
+
+  <p class="small">学习用简化解释，不是诊断建议。</p>
+</body>
+</html>

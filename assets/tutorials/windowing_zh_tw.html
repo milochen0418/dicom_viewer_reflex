@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CT 視窗（Windowing）小教學（給 12 歲也看得懂）</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #0f172a;
+      --border: #23304a;
+      --text: #e5e7eb;
+      --muted: #a3a3a3;
+      --accent: #60a5fa;
+      --good: #34d399;
+      --warn: #fbbf24;
+    }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { padding: 16px 18px; border-bottom: 1px solid var(--border); background: rgba(15, 23, 42, 0.75); position: sticky; top: 0; backdrop-filter: blur(6px); }
+    h1 { font-size: 16px; margin: 0 0 6px 0; }
+    header p { margin: 0; color: var(--muted); font-size: 12px; }
+    main { padding: 14px 18px 28px 18px; max-width: 920px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px; margin: 12px 0; }
+    .k { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: rgba(96, 165, 250, 0.12); color: var(--accent); font-size: 12px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    section { scroll-margin-top: 78px; }
+    h2 { font-size: 14px; margin: 0 0 6px 0; }
+    h3 { font-size: 13px; margin: 12px 0 6px 0; }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin: 4px 0; }
+    .tip { border-left: 3px solid var(--good); padding-left: 10px; }
+    .warn { border-left: 3px solid var(--warn); padding-left: 10px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; }
+    footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="start">CT 視窗（Windowing）小教學</h1>
+    <p>給 12 歲也能懂：視窗不是「變魔法」，而是「把你想看的灰階範圍放大」。</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <h2>1) 什麼是「窗寬 WW」和「窗位 WL」？</h2>
+          <ul>
+            <li><span class="k">WL（窗位）</span>：你把「最重要的灰色」放在中間。</li>
+            <li><span class="k">WW（窗寬）</span>：你想看的灰色範圍有多寬。範圍越寬，對比越不明顯；越窄，對比越強。</li>
+          </ul>
+          <p class="muted">小記法：WL = 中心，WW = 寬度。</p>
+        </div>
+        <div>
+          <h2>2) 為什麼要用「預設視窗（Preset）」？</h2>
+          <ul>
+            <li>不同身體部位「最重要的灰色範圍」不一樣。</li>
+            <li>選對 preset，你不用一直拉 WW/WL，找得更快。</li>
+          </ul>
+          <p class="tip"><b>重點：</b>同一張 CT，用不同 preset，看起來會不一樣，但影像本身沒有變！</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card toc">
+      <h2>快速跳到你選的 Preset</h2>
+      <p class="muted">點一下就跳到那個視窗的「用在哪、要看什麼」。</p>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><a href="#soft-tissue">Soft Tissue</a></li>
+            <li><a href="#lung">Lung</a></li>
+            <li><a href="#bone">Bone</a></li>
+            <li><a href="#brain">Brain</a></li>
+            <li><a href="#abdomen">Abdomen</a></li>
+            <li><a href="#liver">Liver</a></li>
+            <li><a href="#mediastinum">Mediastinum</a></li>
+            <li><a href="#spine">Spine</a></li>
+            <li><a href="#pelvis">Pelvis</a></li>
+            <li><a href="#head-neck">Head/Neck</a></li>
+            <li><a href="#cta-vascular">CTA/Vascular</a></li>
+            <li><a href="#kidney">Kidney</a></li>
+            <li><a href="#pancreas">Pancreas</a></li>
+            <li><a href="#trauma">Trauma</a></li>
+            <li><a href="#subdural">Subdural</a></li>
+            <li><a href="#stroke">Stroke</a></li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><a href="#body">Body</a></li>
+            <li><a href="#extremity-msk">Extremity/MSK</a></li>
+            <li><a href="#temporal-bone">Temporal Bone</a></li>
+            <li><a href="#sinus">Sinus</a></li>
+            <li><a href="#angio-bone-sub">Angio Bone Sub</a></li>
+            <li><a href="#lung-hrct">Lung HRCT</a></li>
+            <li><a href="#orbits">Orbits</a></li>
+            <li><a href="#cta-head-neck">CTA Head/Neck</a></li>
+            <li><a href="#arterial">Arterial</a></li>
+            <li><a href="#venous">Venous</a></li>
+            <li><a href="#colon-bowel">Colon/Bowel</a></li>
+            <li><a href="#adrenal">Adrenal</a></li>
+            <li><a href="#gallbladder">Gallbladder</a></li>
+            <li><a href="#skin-subcutaneous">Skin/Subcutaneous</a></li>
+            <li><a href="#cardiac">Cardiac</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presets: kid-friendly, short, practical -->
+
+    <section id="soft-tissue" class="card">
+      <h2>Soft Tissue（軟組織）</h2>
+      <ul>
+        <li><b>用在哪：</b>大部分器官、肌肉、脂肪。</li>
+        <li><b>要看什麼：</b>器官邊界、腫塊、發炎、液體（像水）的位置。</li>
+        <li><b>小提示：</b>看不清楚就稍微縮小 WW（對比會更強）。</li>
+      </ul>
+    </section>
+
+    <section id="lung" class="card">
+      <h2>Lung（肺窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>肺、支氣管、氣囊。</li>
+        <li><b>要看什麼：</b>肺紋理、結節、浸潤、氣胸（很多黑色氣體跑到不該去的地方）。</li>
+        <li><b>小提示：</b>肺裡本來就很黑（空氣），別把黑色都當成「洞」。</li>
+      </ul>
+    </section>
+
+    <section id="bone" class="card">
+      <h2>Bone（骨窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>骨頭、骨折、骨刺、鈣化。</li>
+        <li><b>要看什麼：</b>骨皮質（外層亮亮的）、裂縫、變形。</li>
+        <li class="warn"><b>注意：</b>骨窗會讓軟組織看起來很暗，別用骨窗判斷器官。</li>
+      </ul>
+    </section>
+
+    <section id="brain" class="card">
+      <h2>Brain（腦窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>腦實質（腦灰質/白質）。</li>
+        <li><b>要看什麼：</b>左右對稱、腦室大小、腦溝是否變淺（可能腫）。</li>
+      </ul>
+    </section>
+
+    <section id="abdomen" class="card">
+      <h2>Abdomen（腹部）</h2>
+      <ul>
+        <li><b>用在哪：</b>腹部器官（肝、脾、腎、腸等）的「一般檢查」。</li>
+        <li><b>要看什麼：</b>器官輪廓、脂肪層、腹水、腸壁厚不厚。</li>
+      </ul>
+    </section>
+
+    <section id="liver" class="card">
+      <h2>Liver（肝臟）</h2>
+      <ul>
+        <li><b>用在哪：</b>肝臟病灶對比（尤其打顯影劑時）。</li>
+        <li><b>要看什麼：</b>比周圍更暗/更亮的小區塊、邊界清不清楚。</li>
+        <li><b>小提示：</b>肝窗通常 WW 比較窄，讓差異更「跳出來」。</li>
+      </ul>
+    </section>
+
+    <section id="mediastinum" class="card">
+      <h2>Mediastinum（縱膈 / 胸部中間）</h2>
+      <ul>
+        <li><b>用在哪：</b>心臟附近、氣管、食道、大血管、淋巴結。</li>
+        <li><b>要看什麼：</b>腫塊、淋巴結、血管形狀、胸腔積液。</li>
+      </ul>
+    </section>
+
+    <section id="spine" class="card">
+      <h2>Spine（脊椎）</h2>
+      <ul>
+        <li><b>用在哪：</b>脊椎骨、椎間盤附近、椎管。</li>
+        <li><b>要看什麼：</b>骨折、椎體高度、椎管是否狹窄。</li>
+      </ul>
+    </section>
+
+    <section id="pelvis" class="card">
+      <h2>Pelvis（骨盆）</h2>
+      <ul>
+        <li><b>用在哪：</b>骨盆器官（膀胱、子宮/前列腺）與骨盆骨。</li>
+        <li><b>要看什麼：</b>骨折、骨盆腔出血/積液、膀胱形狀。</li>
+      </ul>
+    </section>
+
+    <section id="head-neck" class="card">
+      <h2>Head/Neck（頭頸）</h2>
+      <ul>
+        <li><b>用在哪：</b>頭頸部的肌肉、腺體、淋巴結。</li>
+        <li><b>要看什麼：</b>腫塊、腫脹、氣道是否變窄。</li>
+      </ul>
+    </section>
+
+    <section id="cta-vascular" class="card">
+      <h2>CTA/Vascular（血管 / 顯影劑）</h2>
+      <ul>
+        <li><b>用在哪：</b>打顯影劑後的動脈/靜脈、血管腔。</li>
+        <li><b>要看什麼：</b>血管是否變細、變寬、堵住（血栓）或破洞（出血）。</li>
+        <li><b>小提示：</b>血管很亮是正常（顯影劑）；要比較「亮的形狀」是否連續。</li>
+      </ul>
+    </section>
+
+    <section id="kidney" class="card">
+      <h2>Kidney（腎臟）</h2>
+      <ul>
+        <li><b>用在哪：</b>腎臟實質、腎盂附近。</li>
+        <li><b>要看什麼：</b>腎結石（常很亮）、腫塊、腎盂積水。</li>
+      </ul>
+    </section>
+
+    <section id="pancreas" class="card">
+      <h2>Pancreas（胰臟）</h2>
+      <ul>
+        <li><b>用在哪：</b>胰臟邊界（常被周圍脂肪/腸子干擾）。</li>
+        <li><b>要看什麼：</b>胰臟變大、周圍脂肪霧霧的（可能發炎）。</li>
+      </ul>
+    </section>
+
+    <section id="trauma" class="card">
+      <h2>Trauma（外傷）</h2>
+      <ul>
+        <li><b>用在哪：</b>快速大範圍掃描，先找「大問題」。</li>
+        <li><b>要看什麼：</b>出血、氣胸、骨折、內臟破裂的線索。</li>
+        <li class="warn"><b>注意：</b>外傷不是一個器官，通常要搭配骨窗/肺窗/軟組織一起看。</li>
+      </ul>
+    </section>
+
+    <section id="subdural" class="card">
+      <h2>Subdural（硬腦膜下出血）</h2>
+      <ul>
+        <li><b>用在哪：</b>頭部外傷後，找顱骨內側的出血。</li>
+        <li><b>要看什麼：</b>貼著顱骨內側的「新月形」高密度（偏亮）。</li>
+      </ul>
+    </section>
+
+    <section id="stroke" class="card">
+      <h2>Stroke（中風）</h2>
+      <ul>
+        <li><b>用在哪：</b>想把腦裡很小的灰階差異看清楚。</li>
+        <li><b>要看什麼：</b>某一區變得比較暗、邊界不清楚、腦溝變淺。</li>
+        <li class="warn"><b>提醒：</b>早期中風很難，只靠視窗不一定看得出來，仍要由專業判讀。</li>
+      </ul>
+    </section>
+
+    <section id="body" class="card">
+      <h2>Body（全身 / 廣軟組織）</h2>
+      <ul>
+        <li><b>用在哪：</b>從胸到腹到骨盆，快速看「整體」軟組織。</li>
+        <li><b>要看什麼：</b>大腫塊、積液、明顯不對稱。</li>
+      </ul>
+    </section>
+
+    <section id="extremity-msk" class="card">
+      <h2>Extremity/MSK（四肢 / 肌肉骨骼）</h2>
+      <ul>
+        <li><b>用在哪：</b>手腳的肌肉、筋膜、軟組織腫脹。</li>
+        <li><b>要看什麼：</b>腫脹、血腫、軟組織氣體（不該有的黑色氣泡）。</li>
+      </ul>
+    </section>
+
+    <section id="temporal-bone" class="card">
+      <h2>Temporal Bone（顳骨 / 耳朵骨窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>耳朵周圍很細的小骨頭結構。</li>
+        <li><b>要看什麼：</b>骨頭邊界、細小空腔（乳突氣房）、骨破壞。</li>
+      </ul>
+    </section>
+
+    <section id="sinus" class="card">
+      <h2>Sinus（鼻竇）</h2>
+      <ul>
+        <li><b>用在哪：</b>鼻竇內是否有液體或黏膜增厚。</li>
+        <li><b>要看什麼：</b>鼻竇裡「該是黑的（空氣）」是否變灰/白（液體/發炎）。</li>
+      </ul>
+    </section>
+
+    <section id="angio-bone-sub" class="card">
+      <h2>Angio Bone Sub（血管：去骨視覺）</h2>
+      <ul>
+        <li><b>用在哪：</b>做血管檢查時，想讓骨頭不要太搶戲。</li>
+        <li><b>要看什麼：</b>血管走向是否順、是否有狹窄或阻塞。</li>
+        <li class="muted">這裡的「去骨」通常是後處理概念；你的 app 可能只是用比較適合血管的視窗。</li>
+      </ul>
+    </section>
+
+    <section id="lung-hrct" class="card">
+      <h2>Lung HRCT（高解析肺）</h2>
+      <ul>
+        <li><b>用在哪：</b>想看肺裡很細的紋路（像磨玻璃、網狀）。</li>
+        <li><b>要看什麼：</b>細小紋理變粗、局部霧霧的區域。</li>
+      </ul>
+    </section>
+
+    <section id="orbits" class="card">
+      <h2>Orbits（眼眶）</h2>
+      <ul>
+        <li><b>用在哪：</b>眼球周圍軟組織與眼眶骨。</li>
+        <li><b>要看什麼：</b>骨折、眼肌腫脹、眼眶內出血。</li>
+      </ul>
+    </section>
+
+    <section id="cta-head-neck" class="card">
+      <h2>CTA Head/Neck（頭頸 CTA）</h2>
+      <ul>
+        <li><b>用在哪：</b>頸動脈、腦血管的顯影劑影像。</li>
+        <li><b>要看什麼：</b>狹窄、動脈瘤（鼓起來）、阻塞。</li>
+      </ul>
+    </section>
+
+    <section id="arterial" class="card">
+      <h2>Arterial（動脈期）</h2>
+      <ul>
+        <li><b>用在哪：</b>顯影劑剛進動脈時，動脈最亮。</li>
+        <li><b>要看什麼：</b>動脈走向、狹窄、主動脈/分支是否正常。</li>
+        <li class="muted">如果影像不是動脈期，選動脈期 preset 也不會「變成動脈期」，只是看起來更適合而已。</li>
+      </ul>
+    </section>
+
+    <section id="venous" class="card">
+      <h2>Venous（靜脈期）</h2>
+      <ul>
+        <li><b>用在哪：</b>顯影劑流到靜脈與器官實質更均勻時。</li>
+        <li><b>要看什麼：</b>靜脈回流、器官增強是否均勻、血栓。</li>
+      </ul>
+    </section>
+
+    <section id="colon-bowel" class="card">
+      <h2>Colon/Bowel（大腸 / 腸道）</h2>
+      <ul>
+        <li><b>用在哪：</b>腸壁、腸道周圍脂肪。</li>
+        <li><b>要看什麼：</b>腸壁變厚、周圍脂肪變霧、腸阻塞的線索。</li>
+      </ul>
+    </section>
+
+    <section id="adrenal" class="card">
+      <h2>Adrenal（腎上腺）</h2>
+      <ul>
+        <li><b>用在哪：</b>腎上腺很小，容易被忽略。</li>
+        <li><b>要看什麼：</b>小結節、形狀是否不對稱。</li>
+      </ul>
+    </section>
+
+    <section id="gallbladder" class="card">
+      <h2>Gallbladder（膽囊）</h2>
+      <ul>
+        <li><b>用在哪：</b>膽囊與膽道。</li>
+        <li><b>要看什麼：</b>結石（常亮）、膽囊壁變厚、周圍發炎。</li>
+      </ul>
+    </section>
+
+    <section id="skin-subcutaneous" class="card">
+      <h2>Skin/Subcutaneous（皮膚 / 皮下）</h2>
+      <ul>
+        <li><b>用在哪：</b>皮下脂肪、軟組織腫脹、蜂窩性組織炎線索。</li>
+        <li><b>要看什麼：</b>皮下是否「霧霧的」、有沒有不該有的氣泡（黑點）。</li>
+      </ul>
+    </section>
+
+    <section id="cardiac" class="card">
+      <h2>Cardiac（心臟）</h2>
+      <ul>
+        <li><b>用在哪：</b>心臟周圍軟組織、心包、（有時）冠狀動脈附近。</li>
+        <li><b>要看什麼：</b>心包積液、心臟形狀、周圍是否有積液或腫塊。</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p class="muted">提醒：這是「看懂視窗」的入門。真正的醫療判讀需要專業訓練與完整臨床資訊。</p>
+    </footer>
+  </main>
+</body>
+</html>
