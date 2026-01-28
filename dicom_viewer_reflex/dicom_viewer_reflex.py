@@ -104,7 +104,8 @@ def directory_browser_dialog() -> rx.Component:
                         rx.icon("arrow-up", class_name="h-4 w-4 mr-2"),
                         "Up",
                         on_click=DicomViewerState.go_up_directory,
-                        class_name="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center",
+                        disabled=~DicomViewerState.can_go_up_directory,
+                        class_name="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed",
                     ),
                     rx.el.button(
                         "Select This Folder",

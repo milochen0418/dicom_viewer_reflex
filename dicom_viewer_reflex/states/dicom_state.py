@@ -16,7 +16,8 @@ class DicomViewerState(rx.State):
     _default_browser_dir: str = _default_dicom_dir or str(Path.home())
     directory_path: str = os.getenv("PUBLIC_DICOM_DIR", _default_dicom_dir)
     directory_browser_visible: bool = False
-    directory_browser_path: str = os.getenv("PUBLIC_DICOM_DIR", _default_browser_dir)
+    directory_browser_root: str = os.getenv("PUBLIC_DICOM_DIR", _default_browser_dir)
+    directory_browser_path: str = directory_browser_root
     directory_browser_dirs: list[str] = []
     directory_browser_error: str = ""
     suppress_directory_dialog: bool = False
@@ -67,6 +68,12 @@ class DicomViewerState(rx.State):
     @rx.var
     def slider_max(self) -> int:
         return max(0, self.total_images - 1)
+
+    @rx.var
+    def can_go_up_directory(self) -> bool:
+        current_path = self._normalize_directory_path(self.directory_browser_path)
+        base_path = self._normalize_directory_path(self.directory_browser_root)
+        return current_path != base_path
 
     @rx.event
     def set_directory(self, path: str):
@@ -124,6 +131,8 @@ class DicomViewerState(rx.State):
 
     @rx.event
     def go_up_directory(self):
+        if not self.can_go_up_directory:
+            return
         path = self._normalize_directory_path(self.directory_browser_path).parent
         self.directory_browser_path = str(path)
         self._load_directory_entries(path)
