@@ -1,5 +1,6 @@
 import reflex as rx
 import os
+import sys
 import pydicom
 from pathlib import Path
 import logging
@@ -11,8 +12,8 @@ import base64
 
 class DicomViewerState(rx.State):
     """State for managing DICOM file selection and loading."""
-
-    directory_path: str = ""
+    _default_dicom_dir: str = "/Users/Shared/DICOM" if sys.platform == "darwin" else ""
+    directory_path: str = os.getenv("PUBLIC_DICOM_DIR", _default_dicom_dir)
     dicom_files: list[str] = []
     file_names: list[str] = []
     current_index: int = 0
