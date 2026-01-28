@@ -3,65 +3,427 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CT Windowing 教学（简中）</title>
+  <title>CT 视窗（Windowing）小教学（简中）</title>
   <style>
-    :root { color-scheme: dark; }
-    body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif; background: #0b1220; color: #e2e8f0; }
-    h1 { margin: 0 0 8px; font-size: 18px; }
-    p, li { line-height: 1.5; font-size: 14px; color: #cbd5e1; }
-    .note { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: 10px 12px; border-radius: 10px; margin: 12px 0; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-    section { background: rgba(15,23,42,.65); border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 12px; }
-    section h2 { margin: 0 0 8px; font-size: 15px; }
-    .small { font-size: 12px; color: #94a3b8; }
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #0f172a;
+      --border: #23304a;
+      --text: #e5e7eb;
+      --muted: #a3a3a3;
+      --accent: #60a5fa;
+      --good: #34d399;
+      --warn: #fbbf24;
+    }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { padding: 16px 18px; border-bottom: 1px solid var(--border); background: rgba(15, 23, 42, 0.75); position: sticky; top: 0; backdrop-filter: blur(6px); }
+    h1 { font-size: 16px; margin: 0 0 6px 0; }
+    header p { margin: 0; color: var(--muted); font-size: 12px; }
+    main { padding: 14px 18px 28px 18px; max-width: 920px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px; margin: 12px 0; }
+    .k { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: rgba(96, 165, 250, 0.12); color: var(--accent); font-size: 12px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    section { scroll-margin-top: 78px; }
+    h2 { font-size: 14px; margin: 0 0 6px 0; }
+    h3 { font-size: 13px; margin: 12px 0 6px 0; }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin: 4px 0; }
+    .tip { border-left: 3px solid var(--good); padding-left: 10px; }
+    .warn { border-left: 3px solid var(--warn); padding-left: 10px; }
+    footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
   </style>
 </head>
 <body>
-  <h1>CT Windowing 教学（简中）</h1>
-  <p>你可以把 windowing 想成“让某些灰度更清楚”。preset 是快速切换“要看什么”。</p>
-  <div class="note">
-    <div class="small">快速理解</div>
-    <ul>
-      <li><b>Level（中心）</b>：你想看的灰度中心。</li>
-      <li><b>Width（宽度）</b>：你想看的灰度范围。</li>
-      <li>preset 是“好用的起点”，不是唯一正确。</li>
-    </ul>
-  </div>
+  <header>
+    <h1 id="start">CT 视窗（Windowing）小教学</h1>
+    <p>给新手的直觉：视窗不是“变魔法”，而是“把你想看的灰度范围放大”，像调亮度＋对比。</p>
+  </header>
 
-  <div class="grid">
-    <section id="soft-tissue"><h2>Soft Tissue（软组织）</h2><p>看大部分器官和肌肉。</p></section>
-    <section id="lung"><h2>Lung（肺窗）</h2><p>看肺部和气道。</p></section>
-    <section id="bone"><h2>Bone（骨窗）</h2><p>让骨头和骨折更清楚。</p></section>
-    <section id="brain"><h2>Brain（脑窗）</h2><p>脑部常用视窗。</p></section>
-    <section id="abdomen"><h2>Abdomen（腹部）</h2><p>看腹部器官。</p></section>
-    <section id="liver"><h2>Liver（肝）</h2><p>看肝脏更清楚。</p></section>
-    <section id="mediastinum"><h2>Mediastinum（纵隔）</h2><p>看胸部中间区域。</p></section>
-    <section id="spine"><h2>Spine（脊柱）</h2><p>看脊柱与椎管。</p></section>
-    <section id="pelvis"><h2>Pelvis（骨盆）</h2><p>看骨盆器官。</p></section>
-    <section id="head-neck"><h2>Head/Neck（头颈）</h2><p>看头颈部软组织。</p></section>
-    <section id="cta-vascular"><h2>CTA/Vascular（血管/CTA）</h2><p>看打了显影剂的血管。</p></section>
-    <section id="kidney"><h2>Kidney（肾）</h2><p>看肾脏更清楚。</p></section>
-    <section id="pancreas"><h2>Pancreas（胰腺）</h2><p>看胰腺更清楚。</p></section>
-    <section id="trauma"><h2>Trauma（创伤）</h2><p>用更宽范围快速看受伤。</p></section>
-    <section id="subdural"><h2>Subdural（硬膜下）</h2><p>帮助看颅骨下出血。</p></section>
-    <section id="stroke"><h2>Stroke（中风）</h2><p>窄脑窗，帮助看早期缺血。</p></section>
-    <section id="body"><h2>Body（全身）</h2><p>全身软组织大范围。</p></section>
-    <section id="extremity-msk"><h2>Extremity/MSK（四肢/肌骨）</h2><p>看四肢软组织。</p></section>
-    <section id="temporal-bone"><h2>Temporal Bone（颞骨）</h2><p>看耳朵附近细小骨头。</p></section>
-    <section id="sinus"><h2>Sinus（鼻窦）</h2><p>看鼻窦。</p></section>
-    <section id="angio-bone-sub"><h2>Angio Bone Sub（骨扣除血管）</h2><p>想像把骨头“去掉”，更专注看血管。</p></section>
-    <section id="lung-hrct"><h2>Lung HRCT（高分辨肺）</h2><p>更细的肺部细节。</p></section>
-    <section id="orbits"><h2>Orbits（眼眶）</h2><p>看眼眶结构。</p></section>
-    <section id="cta-head-neck"><h2>CTA Head/Neck（头颈 CTA）</h2><p>看头颈部血管。</p></section>
-    <section id="arterial"><h2>Arterial（动脉期）</h2><p>显影剂在动脉里最亮的时候。</p></section>
-    <section id="venous"><h2>Venous（静脉期）</h2><p>显影剂跑到静脉/器官后。</p></section>
-    <section id="colon-bowel"><h2>Colon/Bowel（肠道）</h2><p>看肠壁和腔内。</p></section>
-    <section id="adrenal"><h2>Adrenal（肾上腺）</h2><p>看肾上腺。</p></section>
-    <section id="gallbladder"><h2>Gallbladder（胆囊）</h2><p>看胆囊与胆道。</p></section>
-    <section id="skin-subcutaneous"><h2>Skin/Subcutaneous（皮肤/皮下）</h2><p>看皮肤与皮下脂肪。</p></section>
-    <section id="cardiac"><h2>Cardiac（心脏）</h2><p>看心脏软组织。</p></section>
-  </div>
+  <main>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <h2>1) 什么是 <span class="k">WL（窗位）</span> 和 <span class="k">WW（窗宽）</span>？</h2>
+          <ul>
+            <li><span class="k">WL（窗位）</span>：把“最重要的灰色”放在中间。</li>
+            <li><span class="k">WW（窗宽）</span>：你想看的灰度范围有多宽。越宽→对比越弱；越窄→对比越强。</li>
+          </ul>
+          <p class="muted">小记法：WL = 中心，WW = 宽度。</p>
+        </div>
+        <div>
+          <h2>2) 为什么要用 Preset（预设视窗）？</h2>
+          <ul>
+            <li>不同部位“重要的灰度范围”不一样。</li>
+            <li>选对 preset，你就不必一直拖 WW/WL，找得更快。</li>
+          </ul>
+          <p class="tip"><b>重点：</b>同一张 CT，换 preset 只是“看法”不同，影像本身没有变。</p>
+        </div>
+      </div>
+    </div>
 
-  <p class="small">学习用简化解释，不是诊断建议。</p>
+    <div class="card">
+      <h2>3) 3 步骤：把想看的东西看清楚</h2>
+      <ul>
+        <li><b>步骤 A：</b>先选最接近的 <span class="k">Preset</span>（最快）。</li>
+        <li><b>步骤 B：</b>再调 <span class="k">WL</span>（整体变亮/变暗）。<br><span class="muted">WL 往上 → 整体偏亮；WL 往下 → 整体偏暗。</span></li>
+        <li><b>步骤 C：</b>最后调 <span class="k">WW</span>（对比强不强）。<br><span class="muted">WW 变小 → 对比更强；WW 变大 → 对比变弱、不容易黑一片/白一片。</span></li>
+      </ul>
+      <p class="tip"><b>小比喻：</b>WL 像“亮度”，WW 像“对比/敏感度”。</p>
+      <p class="warn"><b>常见卡住：</b>你觉得“看不到”时，通常是 WW 太大（对比太弱）或 WL 放错中心。</p>
+    </div>
+
+    <div class="card">
+      <h2>4) 常见误会（新手最容易踩的坑）</h2>
+      <ul>
+        <li><b>越亮不一定越好：</b>太亮会把细节洗掉，像照片过曝。</li>
+        <li><b>黑色不一定是洞：</b>肺本来就黑（空气）；肠道也可能有气体。</li>
+        <li><b>骨窗不要拿来看器官：</b>骨窗会把软组织压得很暗，容易误判。</li>
+        <li><b>动脉期/静脉期不是视窗“变出来”的：</b>那是拍摄时间点，preset 只是显示方式。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>5) 1 分钟小练习（你可以现在就试）</h2>
+      <div class="grid">
+        <div>
+          <h3>练习 1：看骨头/骨折</h3>
+          <ul>
+            <li>先选 <b>Bone</b></li>
+            <li>如果边界不够清：把 WW 稍微缩小</li>
+          </ul>
+        </div>
+        <div>
+          <h3>练习 2：看肺纹理</h3>
+          <ul>
+            <li>先选 <b>Lung</b> 或 <b>Lung HRCT</b></li>
+            <li>如果整片太白：把 WL 往下调一点</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted">提醒：本页是学“怎么看清楚”，不是诊断建议；真正诊断需要专业训练与完整信息。</p>
+    </div>
+
+    <div class="card toc">
+      <h2>快速跳到你选的 Preset</h2>
+      <p class="muted">点一下就跳到那种视窗的“用在哪、要看什么”。</p>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><a href="#soft-tissue">Soft Tissue</a></li>
+            <li><a href="#lung">Lung</a></li>
+            <li><a href="#bone">Bone</a></li>
+            <li><a href="#brain">Brain</a></li>
+            <li><a href="#abdomen">Abdomen</a></li>
+            <li><a href="#liver">Liver</a></li>
+            <li><a href="#mediastinum">Mediastinum</a></li>
+            <li><a href="#spine">Spine</a></li>
+            <li><a href="#pelvis">Pelvis</a></li>
+            <li><a href="#head-neck">Head/Neck</a></li>
+            <li><a href="#cta-vascular">CTA/Vascular</a></li>
+            <li><a href="#kidney">Kidney</a></li>
+            <li><a href="#pancreas">Pancreas</a></li>
+            <li><a href="#trauma">Trauma</a></li>
+            <li><a href="#subdural">Subdural</a></li>
+            <li><a href="#stroke">Stroke</a></li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><a href="#body">Body</a></li>
+            <li><a href="#extremity-msk">Extremity/MSK</a></li>
+            <li><a href="#temporal-bone">Temporal Bone</a></li>
+            <li><a href="#sinus">Sinus</a></li>
+            <li><a href="#angio-bone-sub">Angio Bone Sub</a></li>
+            <li><a href="#lung-hrct">Lung HRCT</a></li>
+            <li><a href="#orbits">Orbits</a></li>
+            <li><a href="#cta-head-neck">CTA Head/Neck</a></li>
+            <li><a href="#arterial">Arterial</a></li>
+            <li><a href="#venous">Venous</a></li>
+            <li><a href="#colon-bowel">Colon/Bowel</a></li>
+            <li><a href="#adrenal">Adrenal</a></li>
+            <li><a href="#gallbladder">Gallbladder</a></li>
+            <li><a href="#skin-subcutaneous">Skin/Subcutaneous</a></li>
+            <li><a href="#cardiac">Cardiac</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <section id="soft-tissue" class="card">
+      <h2>Soft Tissue（软组织）</h2>
+      <ul>
+        <li><b>用在哪：</b>大部分器官、肌肉、脂肪。</li>
+        <li><b>要看什么：</b>器官边界、肿块、发炎、液体（像水）的位置。</li>
+        <li><b>你会注意到：</b>脂肪常更暗，肌肉更灰；液体常偏暗。</li>
+        <li><b>快速调整：</b>对比不够→缩小 WW；整体太暗/太亮→调 WL。</li>
+      </ul>
+    </section>
+
+    <section id="lung" class="card">
+      <h2>Lung（肺窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>肺、支气管、肺里的细小纹理。</li>
+        <li><b>要看什么：</b>纹理变化、结节、浸润/磨玻璃样的白雾、气胸线索。</li>
+        <li><b>小提示：</b>肺本来就很黑（空气），重点是看“纹理是否变乱/变白雾”。</li>
+      </ul>
+    </section>
+
+    <section id="bone" class="card">
+      <h2>Bone（骨窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>骨头、骨折、骨刺、钙化。</li>
+        <li><b>要看什么：</b>骨皮质（外层亮）、裂缝、变形。</li>
+        <li class="warn"><b>注意：</b>骨窗会让软组织很暗，别用骨窗判断器官。</li>
+        <li><b>快速调整：</b>如果骨边界“白一片”细节不见，试试缩小 WW 或把 WL 微微往下。</li>
+      </ul>
+    </section>
+
+    <section id="brain" class="card">
+      <h2>Brain（脑窗）</h2>
+      <ul>
+        <li><b>用在哪：</b>脑实质（灰质/白质）。</li>
+        <li><b>要看什么：</b>左右对称、脑室大小、脑沟是否变浅（可能肿）。</li>
+        <li><b>小提示：</b>脑部差异很细，小小的 WW/WL 变化就可能影响你看到的细节。</li>
+      </ul>
+    </section>
+
+    <section id="abdomen" class="card">
+      <h2>Abdomen（腹部）</h2>
+      <ul>
+        <li><b>用在哪：</b>腹部器官的一般检查（肝、脾、肾、肠等）。</li>
+        <li><b>要看什么：</b>器官轮廓、脂肪层、腹水、肠壁厚不厚的线索。</li>
+        <li><b>小技巧：</b>不确定该选什么时先用 Abdomen，再切更专一的 preset。</li>
+      </ul>
+    </section>
+
+    <section id="liver" class="card">
+      <h2>Liver（肝）</h2>
+      <ul>
+        <li><b>用在哪：</b>肝脏病灶对比（尤其打显影剂时）。</li>
+        <li><b>要看什么：</b>比周围更暗/更亮的小区域、边界清不清楚。</li>
+        <li><b>小提示：</b>肝窗常 WW 较窄，让差异更“跳出来”；如果全都差不多灰，先缩小 WW。</li>
+      </ul>
+    </section>
+
+    <section id="mediastinum" class="card">
+      <h2>Mediastinum（纵隔/胸部中间）</h2>
+      <ul>
+        <li><b>用在哪：</b>心脏附近、气管、食管、大血管、淋巴结。</li>
+        <li><b>要看什么：</b>肿块、淋巴结、血管形状、胸腔积液。</li>
+      </ul>
+    </section>
+
+    <section id="spine" class="card">
+      <h2>Spine（脊柱）</h2>
+      <ul>
+        <li><b>用在哪：</b>脊柱骨、椎管相关结构。</li>
+        <li><b>要看什么：</b>骨折、椎体高度、椎管狭窄线索。</li>
+      </ul>
+    </section>
+
+    <section id="pelvis" class="card">
+      <h2>Pelvis（骨盆）</h2>
+      <ul>
+        <li><b>用在哪：</b>骨盆器官与骨盆骨一起看。</li>
+        <li><b>要看什么：</b>积液/出血线索、膀胱形状、骨盆骨折。</li>
+      </ul>
+    </section>
+
+    <section id="head-neck" class="card">
+      <h2>Head/Neck（头颈）</h2>
+      <ul>
+        <li><b>用在哪：</b>头颈部肌肉、腺体、淋巴结。</li>
+        <li><b>要看什么：</b>肿块、肿胀、气道是否变窄的线索。</li>
+      </ul>
+    </section>
+
+    <section id="cta-vascular" class="card">
+      <h2>CTA/Vascular（血管/显影剂）</h2>
+      <ul>
+        <li><b>用在哪：</b>打显影剂后的动脉/静脉、血管腔。</li>
+        <li><b>要看什么：</b>血管变细/变宽、堵住（血栓）或破裂（出血）线索。</li>
+        <li><b>小提示：</b>血管很亮是正常（显影剂）；重点看“亮的形状”是否连续。</li>
+        <li><b>快速调整：</b>如果血管太亮变成白线没细节，试试把 WW 放大一点或把 WL 往上。</li>
+      </ul>
+    </section>
+
+    <section id="kidney" class="card">
+      <h2>Kidney（肾）</h2>
+      <ul>
+        <li><b>用在哪：</b>肾实质、肾盂附近。</li>
+        <li><b>要看什么：</b>结石（常很亮）、肿块、肾积水线索。</li>
+        <li><b>小提示：</b>怀疑结石时可搭配 <b>Bone</b> 看“亮点”是否清楚。</li>
+      </ul>
+    </section>
+
+    <section id="pancreas" class="card">
+      <h2>Pancreas（胰腺）</h2>
+      <ul>
+        <li><b>用在哪：</b>胰腺边界（常被周围肠道/脂肪影响）。</li>
+        <li><b>要看什么：</b>胰腺变大、周围脂肪变“雾雾的”（常见发炎线索）。</li>
+      </ul>
+    </section>
+
+    <section id="trauma" class="card">
+      <h2>Trauma（创伤）</h2>
+      <ul>
+        <li><b>用在哪：</b>快速大范围先找“大问题”。</li>
+        <li><b>要看什么：</b>出血线索、气胸线索、骨折、重要器官损伤提示。</li>
+        <li class="warn"><b>注意：</b>创伤不是单一器官，通常要搭配骨窗/肺窗/软组织一起看。</li>
+        <li><b>小技巧：</b>先快速扫一遍，再用更专一的视窗逐项确认。</li>
+      </ul>
+    </section>
+
+    <section id="subdural" class="card">
+      <h2>Subdural（硬膜下）</h2>
+      <ul>
+        <li><b>用在哪：</b>头部外伤后，找靠近颅骨内侧的出血。</li>
+        <li><b>要看什么：</b>贴着颅骨内侧的“新月形”偏亮区域。</li>
+        <li class="warn"><b>提醒：</b>用骨窗看时颅骨太亮容易分心；这个视窗更容易让出血凸显。</li>
+      </ul>
+    </section>
+
+    <section id="stroke" class="card">
+      <h2>Stroke（中风）</h2>
+      <ul>
+        <li><b>用在哪：</b>想把脑里很小的灰度差异看清楚。</li>
+        <li><b>要看什么：</b>某一小区变暗、边界变糊、脑沟变浅。</li>
+        <li class="warn"><b>提醒：</b>早期中风很难，只靠视窗不一定看得出来，仍需要专业判读。</li>
+        <li><b>小提示：</b>如果怎么调都看不到变化，可能时间点太早或需要其他序列，这是常见情况。</li>
+      </ul>
+    </section>
+
+    <section id="body" class="card">
+      <h2>Body（全身）</h2>
+      <ul>
+        <li><b>用在哪：</b>胸/腹/盆整体的宽软组织视野。</li>
+        <li><b>要看什么：</b>大肿块、积液、明显不对称。</li>
+      </ul>
+    </section>
+
+    <section id="extremity-msk" class="card">
+      <h2>Extremity/MSK（四肢/肌骨）</h2>
+      <ul>
+        <li><b>用在哪：</b>手脚肌肉与软组织肿胀。</li>
+        <li><b>要看什么：</b>肿胀、血肿、软组织内不该有的气体小泡（黑点）。</li>
+      </ul>
+    </section>
+
+    <section id="temporal-bone" class="card">
+      <h2>Temporal Bone（颞骨）</h2>
+      <ul>
+        <li><b>用在哪：</b>耳朵周围细小骨结构。</li>
+        <li><b>要看什么：</b>骨边界、细小空腔（气房）、骨破坏线索。</li>
+      </ul>
+    </section>
+
+    <section id="sinus" class="card">
+      <h2>Sinus（鼻窦）</h2>
+      <ul>
+        <li><b>用在哪：</b>鼻窦里是否有液体或黏膜增厚。</li>
+        <li><b>要看什么：</b>本该是黑的（空气）是否变灰/白（液体/发炎）。</li>
+      </ul>
+    </section>
+
+    <section id="angio-bone-sub" class="card">
+      <h2>Angio Bone Sub（去骨血管视角）</h2>
+      <ul>
+        <li><b>用在哪：</b>血管检查时，希望骨头不要太抢戏。</li>
+        <li><b>要看什么：</b>血管走向是否顺、是否狭窄或阻塞线索。</li>
+        <li class="muted">“去骨”很多时候是后处理概念；这里可能只是更适合血管的视窗。</li>
+        <li><b>小技巧：</b>如果骨头还是太亮干扰，试试把 WW 放大或把 WL 往上。</li>
+      </ul>
+    </section>
+
+    <section id="lung-hrct" class="card">
+      <h2>Lung HRCT（高分辨肺）</h2>
+      <ul>
+        <li><b>用在哪：</b>想看肺里更细的纹理。</li>
+        <li><b>要看什么：</b>细小白雾、网状/线状纹理变化。</li>
+      </ul>
+    </section>
+
+    <section id="orbits" class="card">
+      <h2>Orbits（眼眶）</h2>
+      <ul>
+        <li><b>用在哪：</b>眼球周围软组织与眼眶骨。</li>
+        <li><b>要看什么：</b>骨折、肌肉肿胀、眼眶内出血线索。</li>
+      </ul>
+    </section>
+
+    <section id="cta-head-neck" class="card">
+      <h2>CTA Head/Neck（头颈 CTA）</h2>
+      <ul>
+        <li><b>用在哪：</b>颈动脉、脑血管 CTA。</li>
+        <li><b>要看什么：</b>狭窄、动脉瘤样鼓起、阻塞线索。</li>
+      </ul>
+    </section>
+
+    <section id="arterial" class="card">
+      <h2>Arterial（动脉期）</h2>
+      <ul>
+        <li><b>用在哪：</b>显影剂刚进动脉时（动脉最亮）。</li>
+        <li><b>要看什么：</b>动脉分支、狭窄、异常扩张。</li>
+        <li class="muted">如果影像不是动脉期，选动脉期 preset 也不会“变成动脉期”，只是显示更适合而已。</li>
+      </ul>
+    </section>
+
+    <section id="venous" class="card">
+      <h2>Venous（静脉期）</h2>
+      <ul>
+        <li><b>用在哪：</b>显影剂流到静脉与器官实质更均匀时。</li>
+        <li><b>要看什么：</b>静脉回流、器官增强是否均匀、血栓线索。</li>
+      </ul>
+    </section>
+
+    <section id="colon-bowel" class="card">
+      <h2>Colon/Bowel（肠道）</h2>
+      <ul>
+        <li><b>用在哪：</b>肠壁与周围脂肪层。</li>
+        <li><b>要看什么：</b>肠壁变厚、周围脂肪变“雾”、梗阻线索。</li>
+      </ul>
+    </section>
+
+    <section id="adrenal" class="card">
+      <h2>Adrenal（肾上腺）</h2>
+      <ul>
+        <li><b>用在哪：</b>肾上腺很小，容易被忽略。</li>
+        <li><b>要看什么：</b>小结节、形状/大小是否不对称。</li>
+      </ul>
+    </section>
+
+    <section id="gallbladder" class="card">
+      <h2>Gallbladder（胆囊）</h2>
+      <ul>
+        <li><b>用在哪：</b>胆囊与胆道。</li>
+        <li><b>要看什么：</b>结石（常亮）、胆囊壁变厚、周围发炎线索。</li>
+      </ul>
+    </section>
+
+    <section id="skin-subcutaneous" class="card">
+      <h2>Skin/Subcutaneous（皮肤/皮下）</h2>
+      <ul>
+        <li><b>用在哪：</b>皮下脂肪、软组织肿胀模式。</li>
+        <li><b>要看什么：</b>皮下是否“雾雾的”、肿胀、有没有不该有的气泡（黑点）。</li>
+      </ul>
+    </section>
+
+    <section id="cardiac" class="card">
+      <h2>Cardiac（心脏）</h2>
+      <ul>
+        <li><b>用在哪：</b>心脏周围软组织、心包。</li>
+        <li><b>要看什么：</b>心包积液、心脏形状、周围积液/肿块线索。</li>
+        <li class="muted">提示：很多心脏 CT 需要特定扫描方式；视窗只是让你更容易看见。</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p class="muted">说明：这是“看懂视窗”的入门学习页。医疗诊断需要专业训练与完整临床信息。</p>
+    </footer>
+  </main>
 </body>
 </html>

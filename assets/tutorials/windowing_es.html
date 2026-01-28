@@ -3,65 +3,310 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tutorial de Windowing CT (ES)</title>
+  <title>Tutorial de Windowing en CT (Español fácil)</title>
   <style>
-    :root { color-scheme: dark; }
-    body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #0b1220; color: #e2e8f0; }
-    h1 { margin: 0 0 8px; font-size: 18px; }
-    p, li { line-height: 1.5; font-size: 14px; color: #cbd5e1; }
-    .note { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: 10px 12px; border-radius: 10px; margin: 12px 0; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-    section { background: rgba(15,23,42,.65); border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 12px; }
-    section h2 { margin: 0 0 8px; font-size: 15px; }
-    .small { font-size: 12px; color: #94a3b8; }
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #0f172a;
+      --border: #23304a;
+      --text: #e5e7eb;
+      --muted: #a3a3a3;
+      --accent: #60a5fa;
+      --good: #34d399;
+      --warn: #fbbf24;
+    }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { padding: 16px 18px; border-bottom: 1px solid var(--border); background: rgba(15, 23, 42, 0.75); position: sticky; top: 0; backdrop-filter: blur(6px); }
+    h1 { font-size: 16px; margin: 0 0 6px 0; }
+    header p { margin: 0; color: var(--muted); font-size: 12px; }
+    main { padding: 14px 18px 28px 18px; max-width: 920px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px; margin: 12px 0; }
+    .k { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: rgba(96, 165, 250, 0.12); color: var(--accent); font-size: 12px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    section { scroll-margin-top: 78px; }
+    h2 { font-size: 14px; margin: 0 0 6px 0; }
+    h3 { font-size: 13px; margin: 12px 0 6px 0; }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin: 4px 0; }
+    .tip { border-left: 3px solid var(--good); padding-left: 10px; }
+    .warn { border-left: 3px solid var(--warn); padding-left: 10px; }
+    footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
   </style>
 </head>
 <body>
-  <h1>Tutorial de Windowing CT (ES)</h1>
-  <p>Piensa en el windowing como “brillo + contraste” para imágenes médicas. Los presets te ayudan a ver rápido un tipo de tejido.</p>
-  <div class="note">
-    <div class="small">Guía rápida</div>
-    <ul>
-      <li><b>Level</b>: el valor gris en el que te enfocas.</li>
-      <li><b>Width</b>: qué tan grande es el rango de grises visible.</li>
-      <li>Los presets son un buen inicio, no una única verdad.</li>
-    </ul>
-  </div>
+  <header>
+    <h1 id="start">Mini tutorial de Windowing en CT</h1>
+    <p>Idea fácil: el windowing no es “magia”; es elegir qué rango de grises se ve mejor (como brillo + contraste).</p>
+  </header>
 
-  <div class="grid">
-    <section id="soft-tissue"><h2>Soft Tissue</h2><p>Para la mayoría de órganos y músculos.</p></section>
-    <section id="lung"><h2>Lung</h2><p>Para ver pulmones y vías aéreas.</p></section>
-    <section id="bone"><h2>Bone</h2><p>Hace más claros los huesos y fracturas.</p></section>
-    <section id="brain"><h2>Brain</h2><p>Vista estándar del cerebro.</p></section>
-    <section id="abdomen"><h2>Abdomen</h2><p>Vista general del abdomen.</p></section>
-    <section id="liver"><h2>Liver</h2><p>Para ver el hígado con más detalle.</p></section>
-    <section id="mediastinum"><h2>Mediastinum</h2><p>Muestra el centro del pecho.</p></section>
-    <section id="spine"><h2>Spine</h2><p>Para revisar la columna y el canal.</p></section>
-    <section id="pelvis"><h2>Pelvis</h2><p>Vista general de la pelvis.</p></section>
-    <section id="head-neck"><h2>Head/Neck</h2><p>Tejidos de cabeza y cuello.</p></section>
-    <section id="cta-vascular"><h2>CTA/Vascular</h2><p>Para vasos con contraste.</p></section>
-    <section id="kidney"><h2>Kidney</h2><p>Para ver los riñones.</p></section>
-    <section id="pancreas"><h2>Pancreas</h2><p>Para ver el páncreas.</p></section>
-    <section id="trauma"><h2>Trauma</h2><p>Vista amplia para lesiones.</p></section>
-    <section id="subdural"><h2>Subdural</h2><p>Para ver sangrado bajo el cráneo.</p></section>
-    <section id="stroke"><h2>Stroke</h2><p>Vista estrecha para ictus temprano.</p></section>
-    <section id="body"><h2>Body</h2><p>Vista amplia de tejidos blandos.</p></section>
-    <section id="extremity-msk"><h2>Extremity/MSK</h2><p>Para tejidos de brazos y piernas.</p></section>
-    <section id="temporal-bone"><h2>Temporal Bone</h2><p>Para huesos pequeños del oído.</p></section>
-    <section id="sinus"><h2>Sinus</h2><p>Para senos paranasales.</p></section>
-    <section id="angio-bone-sub"><h2>Angio Bone Sub</h2><p>Imagina quitar el hueso para ver vasos.</p></section>
-    <section id="lung-hrct"><h2>Lung HRCT</h2><p>Más detalle del pulmón.</p></section>
-    <section id="orbits"><h2>Orbits</h2><p>Para órbitas y tejidos cercanos.</p></section>
-    <section id="cta-head-neck"><h2>CTA Head/Neck</h2><p>Vasos de cabeza y cuello.</p></section>
-    <section id="arterial"><h2>Arterial</h2><p>Cuando el contraste está brillante en arterias.</p></section>
-    <section id="venous"><h2>Venous</h2><p>Cuando el contraste llega a venas/órganos.</p></section>
-    <section id="colon-bowel"><h2>Colon/Bowel</h2><p>Para pared del intestino y lumen.</p></section>
-    <section id="adrenal"><h2>Adrenal</h2><p>Para glándulas suprarrenales.</p></section>
-    <section id="gallbladder"><h2>Gallbladder</h2><p>Para vesícula y vía biliar.</p></section>
-    <section id="skin-subcutaneous"><h2>Skin/Subcutaneous</h2><p>Para piel y capa de grasa.</p></section>
-    <section id="cardiac"><h2>Cardiac</h2><p>Para tejidos del corazón.</p></section>
-  </div>
+  <main>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <h2>1) ¿Qué son <span class="k">WL</span> y <span class="k">WW</span>?</h2>
+          <ul>
+            <li><span class="k">WL (Window Level)</span>: el “gris central” que quieres resaltar.</li>
+            <li><span class="k">WW (Window Width)</span>: qué tan amplio es el rango de grises visible. Más ancho = menos contraste; más estrecho = más contraste.</li>
+          </ul>
+          <p class="muted">Atajo: WL = centro, WW = ancho del rango.</p>
+        </div>
+        <div>
+          <h2>2) ¿Por qué usar presets?</h2>
+          <ul>
+            <li>Cada tejido/órgano tiene un rango de grises “útil” distinto.</li>
+            <li>Un preset es un buen punto de partida para no ajustar todo a mano.</li>
+          </ul>
+          <p class="tip"><b>Punto clave:</b> el preset cambia cómo <i>ves</i> la misma CT. La imagen no cambia.</p>
+        </div>
+      </div>
+    </div>
 
-  <p class="small">Explicaciones simplificadas para aprender.</p>
+    <div class="card">
+      <h2>3) Método en 3 pasos (rápido)</h2>
+      <ul>
+        <li><b>Paso A:</b> elige el <span class="k">Preset</span> más cercano.</li>
+        <li><b>Paso B:</b> ajusta <span class="k">WL</span> para aclarar/oscurecer todo.<br><span class="muted">WL arriba → más claro. WL abajo → más oscuro.</span></li>
+        <li><b>Paso C:</b> ajusta <span class="k">WW</span> para el contraste.<br><span class="muted">WW más pequeño → más contraste. WW más grande → menos contraste.</span></li>
+      </ul>
+      <p class="tip"><b>Analogía:</b> WL ≈ brillo, WW ≈ contraste/sensibilidad.</p>
+      <p class="warn"><b>Si “no ves nada”:</b> suele ser WW demasiado grande (contraste débil) o WL centrado en el tejido equivocado.</p>
+    </div>
+
+    <div class="card">
+      <h2>4) Errores comunes</h2>
+      <ul>
+        <li><b>Más claro no siempre es mejor:</b> demasiada luz borra detalles (como una foto sobreexpuesta).</li>
+        <li><b>Negro no siempre es un agujero:</b> el pulmón es negro por el aire; el intestino puede tener gas.</li>
+        <li><b>No evalúes órganos con ventana ósea:</b> la ventana ósea oscurece mucho el tejido blando.</li>
+        <li><b>“Arterial/Venosa” son fases de adquisición:</b> el preset no cambia el momento del escaneo, solo el modo de ver.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>5) Práctica de 1 minuto</h2>
+      <div class="grid">
+        <div>
+          <h3>Práctica 1: hueso/fractura</h3>
+          <ul>
+            <li>Empieza con <b>Bone</b></li>
+            <li>Si los bordes se ven planos: reduce un poco WW</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Práctica 2: detalle pulmonar</h3>
+          <ul>
+            <li>Empieza con <b>Lung</b> o <b>Lung HRCT</b></li>
+            <li>Si se ve demasiado blanco: baja un poco WL</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted">Nota: esto es para aprender a “ver mejor”, no es consejo médico. El diagnóstico requiere profesionales.</p>
+    </div>
+
+    <div class="card toc">
+      <h2>Saltar a un preset</h2>
+      <p class="muted">Haz clic para ver “para qué sirve” y “qué mirar”.</p>
+      <div class="grid">
+        <div>
+          <ul>
+            <li><a href="#soft-tissue">Soft Tissue</a></li>
+            <li><a href="#lung">Lung</a></li>
+            <li><a href="#bone">Bone</a></li>
+            <li><a href="#brain">Brain</a></li>
+            <li><a href="#abdomen">Abdomen</a></li>
+            <li><a href="#liver">Liver</a></li>
+            <li><a href="#mediastinum">Mediastinum</a></li>
+            <li><a href="#spine">Spine</a></li>
+            <li><a href="#pelvis">Pelvis</a></li>
+            <li><a href="#head-neck">Head/Neck</a></li>
+            <li><a href="#cta-vascular">CTA/Vascular</a></li>
+            <li><a href="#kidney">Kidney</a></li>
+            <li><a href="#pancreas">Pancreas</a></li>
+            <li><a href="#trauma">Trauma</a></li>
+            <li><a href="#subdural">Subdural</a></li>
+            <li><a href="#stroke">Stroke</a></li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><a href="#body">Body</a></li>
+            <li><a href="#extremity-msk">Extremity/MSK</a></li>
+            <li><a href="#temporal-bone">Temporal Bone</a></li>
+            <li><a href="#sinus">Sinus</a></li>
+            <li><a href="#angio-bone-sub">Angio Bone Sub</a></li>
+            <li><a href="#lung-hrct">Lung HRCT</a></li>
+            <li><a href="#orbits">Orbits</a></li>
+            <li><a href="#cta-head-neck">CTA Head/Neck</a></li>
+            <li><a href="#arterial">Arterial</a></li>
+            <li><a href="#venous">Venous</a></li>
+            <li><a href="#colon-bowel">Colon/Bowel</a></li>
+            <li><a href="#adrenal">Adrenal</a></li>
+            <li><a href="#gallbladder">Gallbladder</a></li>
+            <li><a href="#skin-subcutaneous">Skin/Subcutaneous</a></li>
+            <li><a href="#cardiac">Cardiac</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <section id="soft-tissue" class="card">
+      <h2>Soft Tissue</h2>
+      <ul>
+        <li><b>Sirve para:</b> la mayoría de órganos, músculos y grasa.</li>
+        <li><b>Qué mirar:</b> bordes de órganos, masas, inflamación, líquido.</li>
+        <li><b>Consejo rápido:</b> si falta contraste, reduce WW; si está muy oscuro/claro, ajusta WL.</li>
+      </ul>
+    </section>
+
+    <section id="lung" class="card">
+      <h2>Lung</h2>
+      <ul>
+        <li><b>Sirve para:</b> pulmones y vías aéreas.</li>
+        <li><b>Qué mirar:</b> cambios de textura, nódulos, áreas blanquecinas “en niebla”, pistas de neumotórax.</li>
+        <li><b>Tip:</b> el pulmón es negro por el aire; mira la textura, no solo lo negro.</li>
+      </ul>
+    </section>
+
+    <section id="bone" class="card">
+      <h2>Bone</h2>
+      <ul>
+        <li><b>Sirve para:</b> huesos, fracturas, calcificaciones.</li>
+        <li><b>Qué mirar:</b> bordes brillantes (corteza), líneas de fractura, deformidad.</li>
+        <li class="warn"><b>Ojo:</b> el tejido blando se ve muy oscuro; no uses esta ventana para juzgar órganos.</li>
+      </ul>
+    </section>
+
+    <section id="brain" class="card">
+      <h2>Brain</h2>
+      <ul>
+        <li><b>Sirve para:</b> tejido cerebral.</li>
+        <li><b>Qué mirar:</b> simetría, tamaño de ventrículos, surcos menos visibles (pista de hinchazón).</li>
+      </ul>
+    </section>
+
+    <section id="abdomen" class="card">
+      <h2>Abdomen</h2>
+      <ul>
+        <li><b>Sirve para:</b> visión general de órganos abdominales.</li>
+        <li><b>Qué mirar:</b> contornos, grasa alrededor, líquido, pared intestinal.</li>
+      </ul>
+    </section>
+
+    <section id="liver" class="card">
+      <h2>Liver</h2>
+      <ul>
+        <li><b>Sirve para:</b> ver mejor diferencias en el hígado (sobre todo con contraste).</li>
+        <li><b>Qué mirar:</b> zonas más claras u oscuras y sus bordes.</li>
+        <li><b>Tip:</b> si todo se ve igual, reduce un poco WW para que la diferencia “salte”.</li>
+      </ul>
+    </section>
+
+    <section id="mediastinum" class="card">
+      <h2>Mediastinum</h2>
+      <ul>
+        <li><b>Sirve para:</b> centro del pecho (corazón, grandes vasos, tráquea, ganglios).</li>
+        <li><b>Qué mirar:</b> masas, ganglios, forma de vasos, líquido pleural.</li>
+      </ul>
+    </section>
+
+    <section id="spine" class="card">
+      <h2>Spine</h2>
+      <ul>
+        <li><b>Sirve para:</b> columna y contexto del canal.</li>
+        <li><b>Qué mirar:</b> fracturas, altura vertebral, pistas de estrechez.</li>
+      </ul>
+    </section>
+
+    <section id="pelvis" class="card">
+      <h2>Pelvis</h2>
+      <ul>
+        <li><b>Sirve para:</b> órganos pélvicos y huesos pélvicos.</li>
+        <li><b>Qué mirar:</b> líquido/sangrado, forma de vejiga, fracturas.</li>
+      </ul>
+    </section>
+
+    <section id="head-neck" class="card">
+      <h2>Head/Neck</h2>
+      <ul>
+        <li><b>Sirve para:</b> tejidos blandos de cabeza/cuello.</li>
+        <li><b>Qué mirar:</b> masas, inflamación, estrechamiento de la vía aérea.</li>
+      </ul>
+    </section>
+
+    <section id="cta-vascular" class="card">
+      <h2>CTA/Vascular</h2>
+      <ul>
+        <li><b>Sirve para:</b> vasos con contraste.</li>
+        <li><b>Qué mirar:</b> estrechez, dilatación, bloqueo (trombo) o fuga.</li>
+        <li><b>Tip:</b> vasos brillantes es normal con contraste; mira continuidad y forma.</li>
+      </ul>
+    </section>
+
+    <section id="kidney" class="card">
+      <h2>Kidney</h2>
+      <ul>
+        <li><b>Sirve para:</b> riñones y zona del sistema colector.</li>
+        <li><b>Qué mirar:</b> cálculos (a menudo brillantes), masas, dilatación.</li>
+      </ul>
+    </section>
+
+    <section id="pancreas" class="card">
+      <h2>Pancreas</h2>
+      <ul>
+        <li><b>Sirve para:</b> ver mejor el páncreas y su borde.</li>
+        <li><b>Qué mirar:</b> aumento de tamaño y grasa alrededor “borrosa” (pista de inflamación).</li>
+      </ul>
+    </section>
+
+    <section id="trauma" class="card">
+      <h2>Trauma</h2>
+      <ul>
+        <li><b>Sirve para:</b> revisión rápida y amplia de lesiones.</li>
+        <li><b>Qué mirar:</b> pistas de sangrado, neumotórax, fracturas, lesiones grandes.</li>
+        <li class="warn"><b>Ojo:</b> combínalo con Bone/Lung/Soft Tissue para confirmar.</li>
+      </ul>
+    </section>
+
+    <section id="subdural" class="card">
+      <h2>Subdural</h2>
+      <ul>
+        <li><b>Sirve para:</b> buscar sangrado cerca del cráneo tras trauma.</li>
+        <li><b>Qué mirar:</b> forma de “media luna” brillante pegada al cráneo.</li>
+      </ul>
+    </section>
+
+    <section id="stroke" class="card">
+      <h2>Stroke</h2>
+      <ul>
+        <li><b>Sirve para:</b> notar diferencias muy pequeñas en el cerebro.</li>
+        <li><b>Qué mirar:</b> zona un poco más oscura, bordes borrosos, surcos menos visibles.</li>
+        <li class="warn"><b>Importante:</b> el ictus temprano puede ser muy difícil de ver; se requiere evaluación profesional.</li>
+      </ul>
+    </section>
+
+    <section id="body" class="card"><h2>Body</h2><ul><li><b>Sirve para:</b> visión amplia de tejido blando.</li><li><b>Qué mirar:</b> masas grandes, líquido, asimetría obvia.</li></ul></section>
+    <section id="extremity-msk" class="card"><h2>Extremity/MSK</h2><ul><li><b>Sirve para:</b> brazos/piernas (músculo y tejido blando).</li><li><b>Qué mirar:</b> hinchazón, hematoma, burbujas de gas inesperadas.</li></ul></section>
+    <section id="temporal-bone" class="card"><h2>Temporal Bone</h2><ul><li><b>Sirve para:</b> huesos finos del oído.</li><li><b>Qué mirar:</b> bordes óseos y pequeñas cavidades de aire.</li></ul></section>
+    <section id="sinus" class="card"><h2>Sinus</h2><ul><li><b>Sirve para:</b> senos paranasales.</li><li><b>Qué mirar:</b> zonas que deberían ser negras (aire) y se vuelven grises/blancas.</li></ul></section>
+    <section id="angio-bone-sub" class="card"><h2>Angio Bone Sub</h2><ul><li><b>Sirve para:</b> ver vasos sin que el hueso “moleste”.</li><li><b>Nota:</b> la sustracción ósea real suele ser posprocesado; aquí puede ser solo una ventana.</li></ul></section>
+    <section id="lung-hrct" class="card"><h2>Lung HRCT</h2><ul><li><b>Sirve para:</b> detalle fino del pulmón.</li><li><b>Qué mirar:</b> cambios sutiles de textura o “niebla”.</li></ul></section>
+    <section id="orbits" class="card"><h2>Orbits</h2><ul><li><b>Sirve para:</b> órbitas y tejidos cercanos.</li><li><b>Qué mirar:</b> fractura e hinchazón.</li></ul></section>
+    <section id="cta-head-neck" class="card"><h2>CTA Head/Neck</h2><ul><li><b>Sirve para:</b> vasos de cabeza y cuello.</li><li><b>Qué mirar:</b> estrechez, dilataciones, bloqueo.</li></ul></section>
+    <section id="arterial" class="card"><h2>Arterial</h2><ul><li><b>Sirve para:</b> fase arterial (arterias más brillantes).</li><li class="muted">No cambia la fase del estudio; solo la visualización.</li></ul></section>
+    <section id="venous" class="card"><h2>Venous</h2><ul><li><b>Sirve para:</b> fase venosa (realce más uniforme).</li></ul></section>
+    <section id="colon-bowel" class="card"><h2>Colon/Bowel</h2><ul><li><b>Sirve para:</b> pared intestinal.</li><li><b>Qué mirar:</b> engrosamiento y grasa alrededor borrosa.</li></ul></section>
+    <section id="adrenal" class="card"><h2>Adrenal</h2><ul><li><b>Sirve para:</b> suprarrenales (pequeñas).</li><li><b>Qué mirar:</b> nódulos y asimetría.</li></ul></section>
+    <section id="gallbladder" class="card"><h2>Gallbladder</h2><ul><li><b>Sirve para:</b> vesícula y vía biliar.</li><li><b>Qué mirar:</b> piedras y pared engrosada.</li></ul></section>
+    <section id="skin-subcutaneous" class="card"><h2>Skin/Subcutaneous</h2><ul><li><b>Sirve para:</b> piel y grasa subcutánea.</li><li><b>Qué mirar:</b> “niebla” en grasa e incluso gas inesperado.</li></ul></section>
+    <section id="cardiac" class="card"><h2>Cardiac</h2><ul><li><b>Sirve para:</b> región del corazón y pericardio.</li><li class="muted">La CT cardíaca a menudo usa sincronización especial; la ventana solo ayuda a ver.</li></ul></section>
+
+    <footer>
+      <p class="muted">Nota de aprendizaje: esta página es para entender el windowing. El diagnóstico médico requiere profesionales y contexto clínico.</p>
+    </footer>
+  </main>
 </body>
 </html>
