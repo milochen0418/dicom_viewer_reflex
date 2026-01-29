@@ -4,6 +4,17 @@
 
 DICOM Viewer is a lightweight image viewer designed for browsing local DICOM folders. It lets you scan and select a DICOM directory, quickly load images into the viewer, and apply common presets to adjust visualization for easier inspection and comparison.
 
+This project is designed to be beginner-friendly for people new to DICOM, and this README includes a complete, step-by-step usage guide (including how to use presets).
+
+## Design Document
+
+We maintain a Software Design Document (SDD) to capture the overall architecture and key design decisions:
+
+- [DICOM Viewer — Software Design Document (SDD).pdf](docs/DICOM%20Viewer%20%E2%80%94%20Software%20Design%20Document%20%28SDD%29.pdf)
+
+Contributions are welcome—feel free to open an issue with feedback/ideas, or submit a PR to improve the app or the documentation.
+
+
 ## Usage Guide 
 
 The steps below follow the actual workflow and reference every image under docs/images/ to help you quickly understand and use the product.
